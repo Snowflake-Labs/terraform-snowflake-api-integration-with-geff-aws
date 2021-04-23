@@ -7,5 +7,5 @@ output "api_integration_name"{
 output "api_gateway_invoke_url"{
     type        = list
     description = "List of all invoked url"
-    value       = aws_api_gateway_deployment.prod.invoke_url
+    value       = module.aws_api_gateway_deployment.prod.invoke_url
 }
