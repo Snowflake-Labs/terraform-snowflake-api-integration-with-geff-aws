@@ -1,6 +1,6 @@
 # Generic Exteranal Function Framework (GEFF)
 
-Terraform module to create a snowflake API integrations and dependent resources such:
+Terraform module to create a snowflake API integrations and dependent resources such as:
 
 - **GEFF Lambda** for calling APIs and loading responses
 - **API Gateway** to manage executions of Lambda
