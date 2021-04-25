@@ -2,7 +2,7 @@
 
 Terraform module to create a snowflake API integrations and dependent resources such:
 
-- **GEFF Lambda** for calling API's and loading responses
+- **GEFF Lambda** for calling APIs and loading responses
 - **API Gateway** to manage executions of Lambda
 - **IAM Role** for Snowflake to make invoke API Gateway
 - **API Integration** to expose interface to Snowflake External Functions
