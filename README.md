@@ -1,4 +1,4 @@
-# Generic Exteranal Function Framework (GEFF)
+# Generic External Function Framework (GEFF)
 
 Terraform module to create a snowflake API integrations and dependent resources such as:
 
