@@ -1,5 +1,5 @@
 resource "aws_iam_policy" "prod_cloudwatch_write" {
-  name = "cloudwatch-setup-and-write"
+  name = "${var.prefix}-cloudwatch-setup-and-write"
   path = "/service-role/"
 
   policy = jsonencode(
