@@ -1,29 +1,29 @@
-# terraform {
-#   required_providers {
-#     aws = {
-#       source  = "hashicorp/aws"
-#       version = "3.37.0"
-#     }
-#     # snowflake = {
-#     #   source  = "chanzuckerberg/snowflake"
-#     #   version = "0.24.0"
-#     # }
-#   }
-# }
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "3.37.0"
+    }
+    snowflake = {
+      source  = "chanzuckerberg/snowflake"
+      version = "0.24.0"
+    }
+  }
+}
 
 provider "aws" {
   region = "us-west-2"
 }
 
-# provider "snowflake" {
-#   username = var.snowflake_username
-#   account  = var.snowflake_account
-#   password = var.snowflake_password
-#   role     = var.snowflake_role
-# }
+provider "snowflake" {
+  username = var.snowflake_username
+  account  = var.snowflake_account
+  password = var.snowflake_password
+  role     = var.snowflake_role
+}
 
 module "snowflake_api_integration_aws_gateway" {
-  source                          = "./.."
+  source                          = "../../"
   prefix                          = var.prefix
   snowflake_integration_user      = var.snowflake_integration_user
   aws_cloudwatch_metric_namespace = var.aws_cloudwatch_metric_namespace
