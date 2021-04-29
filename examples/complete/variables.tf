@@ -1,7 +1,7 @@
 variable "prefix" {
   type        = string
   description = "this will be the prefix used to name the Resources"
-  default     = "example"
+  default     = "prasanth"
 }
 
 variable "snowflake_integration_user" {
@@ -23,28 +23,29 @@ variable "aws_deployment_stage_name" {
 }
 
 variable "snowflake_account" {
-  type        = string
+  type    = string
+  default = "KH54840"
 }
 
 variable "snowflake_role" {
-  type        = string
-  default     = "ACCOUNTADMIN"
+  type    = string
+  default = "ACCOUNTADMIN"
 }
 
 variable "snowflake_username" {
-  type        = string
-  sensitive   = true
+  type      = string
+  default   = "prasanth"
+  sensitive = true
 }
 
 variable "snowflake_password" {
-  type        = string
-  sensitive   = true
+  type      = string
+  default   = "@kHTN8ihicuwTdQ"
+  sensitive = true
 }
-
 
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
-
 
 locals {
   account_id  = data.aws_caller_identity.current.account_id
