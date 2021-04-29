@@ -1,7 +1,7 @@
 variable "prefix" {
   type        = string
   description = "this will be the prefix used to name the Resources"
-  default     = "prasanth"
+  default     = "example"
 }
 
 variable "snowflake_integration_user" {
