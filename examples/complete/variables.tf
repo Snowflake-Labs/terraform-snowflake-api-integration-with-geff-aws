@@ -23,8 +23,7 @@ variable "aws_deployment_stage_name" {
 }
 
 variable "snowflake_account" {
-  type    = string
-  default = "KH54840"
+  type = string
 }
 
 variable "snowflake_role" {
@@ -34,13 +33,11 @@ variable "snowflake_role" {
 
 variable "snowflake_username" {
   type      = string
-  default   = "prasanth"
   sensitive = true
 }
 
 variable "snowflake_password" {
   type      = string
-  default   = "@kHTN8ihicuwTdQ"
   sensitive = true
 }
 
