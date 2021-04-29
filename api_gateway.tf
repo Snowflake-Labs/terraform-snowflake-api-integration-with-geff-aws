@@ -75,7 +75,7 @@ resource "aws_iam_role_policy" "gateway_caller" {
 }
 
 resource "aws_iam_role_policy_attachment" "gateway_caller" {
-  role       = aws_iam_role.gateway_caller.name
+  role       = aws_iam_role.gateway_caller.id
   policy_arn = "arn:aws:iam::aws:policy/AmazonAPIGatewayInvokeFullAccess"
 }
 
@@ -315,23 +315,31 @@ resource "aws_api_gateway_deployment" "prod" {
     aws_api_gateway_integration.smtp_to_lambda,
     aws_api_gateway_integration.boto3_to_lambda,
     aws_api_gateway_integration.xmlrpc_to_lambda,
+    aws_api_gateway_integration.cloudwatch_metric_to_lambda,
   ]
 
-  rest_api_id = aws_api_gateway_rest_api.ef_to_lambda.id
-  stage_name = var.aws_deployment_stage_name
+  triggers = {
+    redeployment = sha1(jsonencode(aws_api_gateway_rest_api.ef_to_lambda))
+  }
 
-  stage_description = "Deployed at ${timestamp()}"
+  rest_api_id = aws_api_gateway_rest_api.ef_to_lambda.id
 
   lifecycle {
     create_before_destroy = true
   }
 }
 
+resource "aws_api_gateway_stage" "prod" {
+  deployment_id = aws_api_gateway_deployment.prod.id
+  rest_api_id   = aws_api_gateway_rest_api.ef_to_lambda.id
+  stage_name    = var.aws_deployment_stage_name
+}
+
 resource "aws_api_gateway_method_settings" "enable_logging" {
   depends_on = [aws_api_gateway_account.api_gateway]
 
   rest_api_id = aws_api_gateway_rest_api.ef_to_lambda.id
-  stage_name  = aws_api_gateway_deployment.prod.stage_name
+  stage_name  = aws_api_gateway_stage.prod.stage_name
   method_path = "*/*"
   settings {
     logging_level          = "INFO"

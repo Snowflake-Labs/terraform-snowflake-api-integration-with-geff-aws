@@ -1,5 +1,5 @@
 resource "aws_kms_key" "prod" {
-  description = "key used to encrypt passwords for snowalert to use"
+  description = "key used to encrypt passwords"
   policy = jsonencode(
     {
       Id = "key-default-1"
