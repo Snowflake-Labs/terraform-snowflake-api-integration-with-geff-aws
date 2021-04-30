@@ -1,13 +1,11 @@
 import json
+import os
 import re
-import time
 from codecs import encode
 from json import dumps
 from typing import Any, Dict, Optional, Text
 
 import boto3
-
-REGION_NAME = 'us-west-2'
 
 
 def pick(path: str, d: dict):
@@ -57,8 +55,10 @@ def parse_header_links(value):
 
 def zip(s, chunk_size=1_000_000):
     '''zip in pieces, as it is tough to inflate large chunks in Snowflake per UDF mem limits'''
-    def do_zip(s): return encode(
-        encode(s.encode(), encoding='zlib'), 'base64').decode()
+
+    def do_zip(s):
+        return encode(encode(s.encode(), encoding='zlib'), 'base64').decode()
+
     if len(s) > chunk_size:
         return [do_zip(s[:chunk_size])] + zip(s[chunk_size:], chunk_size)
     return [do_zip(s)]
@@ -88,18 +88,19 @@ def create_response(code, msg):
     return {'statusCode': code, 'body': msg}
 
 
-def invoke_process_lambda(event, lambda_name: str) -> Dict[Text, Any]:
+def invoke_process_lambda(event: Any, lambda_name: Text) -> Dict[Text, Any]:
     # Create payload to be sent to lambda
     invoke_payload = json.dumps(event)
 
-    # Invoke processing lambda asynchronously by using InvocationType='Event'.
-    # This allows the processing to continue while the POST handler returns HTTP 202.
+    # Invoke processing lambda asynchronously, this allows
+    # processing to continue while polls are handled with a 202 status.
     lambda_client = boto3.client(
         'lambda',
-        region_name=REGION_NAME,
+        region_name=os.environ['AWS_REGION'],
     )
     lambda_response = lambda_client.invoke(
         FunctionName=lambda_name, InvocationType='Event', Payload=invoke_payload
     )
-    # returns 202 on success if InvocationType = 'Event'
+
+    # Returns 202 on success if InvocationType = 'Event'
     return lambda_response

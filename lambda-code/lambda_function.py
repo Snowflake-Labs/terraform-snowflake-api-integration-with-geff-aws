@@ -1,8 +1,5 @@
-import json
 import os.path
-import re
 import sys
-from codecs import encode
 from importlib import import_module
 from json import dumps, loads
 from typing import Any, Dict, Optional, Text
@@ -17,7 +14,7 @@ sys.path.append(os.path.join(dir_path, 'site-packages'))
 
 def async_flow_poll(event: Any, destination: str, context: Any) -> Dict[str, Any]:
     """
-    Repeatedly checks on the status of the batch_ID, and returns the result after the
+    Repeatedly checks on the status of the batch, and returns the result after the
     processing has been completed
 
     Args:
@@ -29,10 +26,16 @@ def async_flow_poll(event: Any, destination: str, context: Any) -> Dict[str, Any
         Dict[str, Any]:
     """
     batch_id = event['headers']['sf-external-function-query-batch-id']
-    # 1. Check s3 for manifest file.
-    # 2. if found return files names in specific format
-    # 3. else return 202
-    return {'statusCode': 202}
+    write_driver = import_module(
+        f'drivers.destination_{urlparse(destination).scheme}')
+    # Ignoring style due to dynamic import
+    status_body = write_driver.check_status(
+        destination, batch_id)  # type: ignore
+
+    if status_body:
+        return {'statusCode': 200, 'body': status_body}
+    else:
+        return {'statusCode': 202}
 
 
 def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
@@ -51,19 +54,19 @@ def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
     destination = headers['sf-custom-destination']
     headers.pop('sf-custom-destination')
     headers['write-uri'] = destination
-
     lambda_name = context.function_name
 
-    write_driver = import_module(
-        f'drivers.destination_{urlparse(destination).scheme}')
-    write_driver.init(destination, batch_id)
+    destination_driver = import_module(
+        f'drivers.destination_{urlparse(destination).scheme}'
+    )
+    # Ignoring style due to dynamic import
+    destination_driver.init(destination, batch_id)  # type: ignore
 
-    lambda_response = invoke_process_lambda(batch_id, event, lambda_name)
-    # status 202 it means still processing we echo that to base lambda.
+    lambda_response = invoke_process_lambda(event, lambda_name)
     if lambda_response['StatusCode'] != 202:
         return create_response(400, 'Error invoking child lambda.')
     else:
-        return {'statusCode': lambda_response['StatusCode']}
+        return {'statusCode': 202}
 
 
 def lambda_handler(event, context):
@@ -94,7 +97,12 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
     response_encoding = headers.pop('sf-custom-response-encoding', None)
     write_uri = headers.get('write-uri')
     req_body = loads(event['body'])
+    destination_driver = import_module(
+        f'drivers.destination_{urlparse(write_uri).scheme}'
+    )
+    batch_id = headers['sf-external-function-query-batch-id']
     res_data = []
+
     for row_number, *args in req_body['data']:
         row_result = []
         process_row_params = {
@@ -107,11 +115,18 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
             driver, *path = event['path'].lstrip('/').split('/')
             driver = driver.replace('-', '_')
             process_row = import_module(
-                f'drivers.process_{driver}').process_row
+                f'drivers.process_{driver}', package=None
+            ).process_row  # type: ignore
             row_result = process_row(*path, **process_row_params)
+            if write_uri:
+                # Write s3 data and return confirmation
+                # Ignoring style due to dynamic import
+                row_result = destination_driver.write(   # type: ignore
+                    write_uri, batch_id, row_number, row_result
+                )
 
         except Exception as e:
-            row_result = {'error': repr(e)}
+            row_result = [{'error': repr(e)}]
 
         res_data.append(
             [
@@ -121,26 +136,22 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
         )
     data_dumps = dumps({'data': res_data})
 
-    if write_uri:
-        # Write s3 data and return confirmation
-        pass
-    else:
-        if len(data_dumps) > 6_000_000:
-            data_dumps = dumps(
-                {
-                    'data': [
-                        [
-                            rn,
-                            {
-                                'error': (
-                                    f'Response size ({len(data_dumps)} bytes) will likely'
-                                    'exceeded maximum allowed payload size (6291556 bytes).'
-                                )
-                            },
-                        ]
-                        for rn, *args in req_body['data']
+    if len(data_dumps) > 6_000_000:
+        data_dumps = dumps(
+            {
+                'data': [
+                    [
+                        rn,
+                        {
+                            'error': (
+                                f'Response size ({len(data_dumps)} bytes) will likely'
+                                'exceeded maximum allowed payload size (6291556 bytes).'
+                            )
+                        },
                     ]
-                }
-            )
+                    for rn, *args in req_body['data']
+                ]
+            }
+        )
 
-        return {'statusCode': 200, 'body': data_dumps}
+    return {'statusCode': 200, 'body': data_dumps}
