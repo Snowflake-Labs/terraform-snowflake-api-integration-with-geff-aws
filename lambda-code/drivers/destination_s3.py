@@ -63,7 +63,7 @@ def chunker(records: List[Any], chunk_size: int) -> Generator[List[Any], None, N
         List[Any]: Returns a list of objects chunk size at a time
     """
     for pos in range(0, len(records), chunk_size):
-        yield records[pos: pos + chunk_size]
+        yield records[pos : pos + chunk_size]
 
 
 def init(batch_id: Text, destination: Text):
