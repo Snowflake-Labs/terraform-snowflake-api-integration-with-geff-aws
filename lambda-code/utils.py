@@ -84,7 +84,7 @@ def format(s, ps):
     return ps[int(m.group(1))] if m else replace_refs(s, ps)
 
 
-def create_response(code, msg):
+def create_response(code: int, msg: Text) -> Dict[Text, Any]:
     return {'statusCode': code, 'body': msg}
 
 

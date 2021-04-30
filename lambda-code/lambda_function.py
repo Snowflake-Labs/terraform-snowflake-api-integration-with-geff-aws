@@ -43,7 +43,7 @@ def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
         return {'statusCode': 202}
 
 
-def async_flow_poll(event: Any, destination: str, context: Any) -> Dict[str, Any]:
+def async_flow_poll(batch_id: Text, destination: Text) -> Dict[Text, Any]:
     """
     Repeatedly checks on the status of the batch, and returns the result after the
     processing has been completed
@@ -56,7 +56,6 @@ def async_flow_poll(event: Any, destination: str, context: Any) -> Dict[str, Any
     Returns:
         Dict[str, Any]:
     """
-    batch_id = event['headers']['sf-external-function-query-batch-id']
     write_driver = import_module(f'drivers.destination_{urlparse(destination).scheme}')
     # Ignoring style due to dynamic import
     status_body = write_driver.check_status(destination, batch_id)  # type: ignore
@@ -142,14 +141,17 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
     return {'statusCode': 200, 'body': data_dumps}
 
 
-def lambda_handler(event, context):
+def lambda_handler(event: Any, context: Any) -> Dict[Text, Any]:
     destination = event['headers'].get('sf-custom-destination')
+    batch_id = event['headers']['sf-external-function-query-batch-id']
     method = event.get('httpMethod', 'GET')
 
     # The first request is always a POST unless SF is polling for status.
     if destination:  # POST + dest header == async flow
         return async_flow_init(event, context)
     elif method == 'GET':  # First request being GET == request is a snowflake poll
-        return async_flow_poll(event, context)
+        return async_flow_poll(destination, batch_id)
     elif method == 'POST':  # POST + no dest header == Regular request for data
         return sync_flow(event, context)
+    else:
+        return create_response(200, "Unexpected state.")
