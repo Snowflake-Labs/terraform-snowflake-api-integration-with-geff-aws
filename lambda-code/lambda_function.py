@@ -12,32 +12,6 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dir_path, 'site-packages'))
 
 
-def async_flow_poll(event: Any, destination: str, context: Any) -> Dict[str, Any]:
-    """
-    Repeatedly checks on the status of the batch, and returns the result after the
-    processing has been completed
-
-    Args:
-        event (Any):
-        destination (str):
-        context (Any):
-
-    Returns:
-        Dict[str, Any]:
-    """
-    batch_id = event['headers']['sf-external-function-query-batch-id']
-    write_driver = import_module(
-        f'drivers.destination_{urlparse(destination).scheme}')
-    # Ignoring style due to dynamic import
-    status_body = write_driver.check_status(
-        destination, batch_id)  # type: ignore
-
-    if status_body:
-        return {'statusCode': 200, 'body': status_body}
-    else:
-        return {'statusCode': 202}
-
-
 def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
     """
     Handles the async part of the request flows.
@@ -69,17 +43,28 @@ def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
         return {'statusCode': 202}
 
 
-def lambda_handler(event, context):
-    destination = event['headers'].get('sf-custom-destination')
-    method = event.get('httpMethod', 'GET')
+def async_flow_poll(event: Any, destination: str, context: Any) -> Dict[str, Any]:
+    """
+    Repeatedly checks on the status of the batch, and returns the result after the
+    processing has been completed
 
-    # The first request is always a POST unless SF is polling for status.
-    if destination:  # POST + dest header == async flow
-        return async_flow_init(event, context)
-    elif method == 'GET':  # First request being GET == request is a snowflake poll
-        return async_flow_poll(event, context)
-    elif method == 'POST':  # POST + no dest header == Regular request for data
-        return sync_flow(event, context)
+    Args:
+        event (Any):
+        destination (str):
+        context (Any):
+
+    Returns:
+        Dict[str, Any]:
+    """
+    batch_id = event['headers']['sf-external-function-query-batch-id']
+    write_driver = import_module(f'drivers.destination_{urlparse(destination).scheme}')
+    # Ignoring style due to dynamic import
+    status_body = write_driver.check_status(destination, batch_id)  # type: ignore
+
+    if status_body:
+        return {'statusCode': 200, 'body': status_body}
+    else:
+        return {'statusCode': 202}
 
 
 def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
@@ -121,7 +106,7 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
             if write_uri:
                 # Write s3 data and return confirmation
                 # Ignoring style due to dynamic import
-                row_result = destination_driver.write(   # type: ignore
+                row_result = destination_driver.write(  # type: ignore
                     write_uri, batch_id, row_number, row_result
                 )
 
@@ -155,3 +140,16 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
         )
 
     return {'statusCode': 200, 'body': data_dumps}
+
+
+def lambda_handler(event, context):
+    destination = event['headers'].get('sf-custom-destination')
+    method = event.get('httpMethod', 'GET')
+
+    # The first request is always a POST unless SF is polling for status.
+    if destination:  # POST + dest header == async flow
+        return async_flow_init(event, context)
+    elif method == 'GET':  # First request being GET == request is a snowflake poll
+        return async_flow_poll(event, context)
+    elif method == 'POST':  # POST + no dest header == Regular request for data
+        return sync_flow(event, context)
