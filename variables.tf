@@ -1,3 +1,8 @@
+variable "aws_region" {
+  description = "The AWS region in which the AWS infrastructure is created."
+  default     = "us-west-2"
+}
+
 variable "prefix" {
   type        = string
   description = "this will be the prefix used to name the Resources"
@@ -23,22 +28,22 @@ variable "aws_deployment_stage_name" {
 }
 
 variable "snowflake_account" {
-  type        = string
+  type = string
 }
 
 variable "snowflake_role" {
-  type        = string
-  default     = "ACCOUNTADMIN"
+  type    = string
+  default = "ACCOUNTADMIN"
 }
 
 variable "snowflake_username" {
-  type        = string
-  sensitive   = true
+  type      = string
+  sensitive = true
 }
 
 variable "snowflake_password" {
-  type        = string
-  sensitive   = true
+  type      = string
+  sensitive = true
 }
 
 
