@@ -1,3 +1,8 @@
+variable "aws_region" {
+  description = "The AWS region in which the AWS infrastructure is created."
+  default     = "us-west-2"
+}
+
 variable "prefix" {
   type        = string
   description = "this will be the prefix used to name the Resources"
@@ -41,10 +46,9 @@ variable "snowflake_password" {
   sensitive = true
 }
 
+
 data "aws_caller_identity" "current" {}
-data "aws_region" "current" {}
 
 locals {
-  account_id  = data.aws_caller_identity.current.account_id
-  region_name = data.aws_region.current.name
+  account_id = data.aws_caller_identity.current.account_id
 }
