@@ -18,7 +18,7 @@ resource "aws_iam_policy" "prod_cloudwatch_write" {
           ]
           Effect = "Allow"
           Resource = [
-            "arn:aws:logs:us-west-2:${local.account_id}:log-group:/aws/lambda/${aws_lambda_function.stdefn.function_name}:*",
+            "arn:aws:logs:us-west-2:${local.account_id}:log-group:/aws/lambda/${aws_lambda_function.geff.function_name}:*",
           ]
         },
         {

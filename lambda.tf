@@ -9,9 +9,9 @@ data "archive_file" "lambda_code" {
   ]
 }
 
-resource "aws_lambda_function" "stdefn" {
+resource "aws_lambda_function" "geff" {
   function_name    = "${var.prefix}_external_function"
-  role             = aws_iam_role.stdefn.arn
+  role             = aws_iam_role.geff.arn
   handler          = "lambda_function.lambda_handler"
   memory_size      = "512"
   runtime          = "python3.8"
@@ -21,7 +21,7 @@ resource "aws_lambda_function" "stdefn" {
   source_code_hash = data.archive_file.lambda_code.output_base64sha256
 }
 
-resource "aws_iam_role" "stdefn" {
+resource "aws_iam_role" "geff" {
   name = "${var.prefix}_external_function"
   path = "/service-role/"
 
@@ -41,20 +41,20 @@ resource "aws_iam_role" "stdefn" {
   )
 }
 
-resource "aws_iam_role_policy_attachment" "standard_lib_write_logs" {
-  role       = aws_iam_role.stdefn.name
+resource "aws_iam_role_policy_attachment" "geff_write_logs" {
+  role       = aws_iam_role.geff.name
   policy_arn = aws_iam_policy.prod_cloudwatch_write.arn
 }
-resource "aws_iam_role_policy_attachment" "standard_lib_decrypt_secrets" {
-  role       = aws_iam_role.stdefn.name
+resource "aws_iam_role_policy_attachment" "geff_decrypt_secrets" {
+  role       = aws_iam_role.geff.name
   policy_arn = aws_iam_policy.kms_decrypt.arn
 }
 
 resource "aws_lambda_permission" "api_gateway" {
-  function_name = aws_lambda_function.stdefn.function_name
+  function_name = aws_lambda_function.geff.function_name
   principal     = "apigateway.amazonaws.com"
   action        = "lambda:InvokeFunction"
   source_arn    = "${aws_api_gateway_rest_api.ef_to_lambda.execution_arn}/*/*"
 
-  depends_on = [aws_lambda_function.stdefn]
+  depends_on = [aws_lambda_function.geff]
 }

@@ -148,7 +148,7 @@ resource "aws_api_gateway_integration" "https_to_lambda" {
   type                    = "AWS_PROXY"
   content_handling        = "CONVERT_TO_TEXT"
   timeout_milliseconds    = 29000
-  uri                     = aws_lambda_function.stdefn.invoke_arn
+  uri                     = aws_lambda_function.geff.invoke_arn
 
   cache_key_parameters = null
 
@@ -187,7 +187,7 @@ resource "aws_api_gateway_integration" "smtp_to_lambda" {
   type                    = "AWS_PROXY"
   content_handling        = "CONVERT_TO_TEXT"
   timeout_milliseconds    = 29000
-  uri                     = aws_lambda_function.stdefn.invoke_arn
+  uri                     = aws_lambda_function.geff.invoke_arn
 
   cache_key_parameters = null
 
@@ -226,7 +226,7 @@ resource "aws_api_gateway_integration" "cloudwatch_metric_to_lambda" {
   type                    = "AWS_PROXY"
   content_handling        = "CONVERT_TO_TEXT"
   timeout_milliseconds    = 29000
-  uri                     = aws_lambda_function.stdefn.invoke_arn
+  uri                     = aws_lambda_function.geff.invoke_arn
 
   cache_key_parameters = null
 
@@ -262,7 +262,7 @@ resource "aws_api_gateway_integration" "boto3_to_lambda" {
   type                    = "AWS_PROXY"
   content_handling        = "CONVERT_TO_TEXT"
   timeout_milliseconds    = 29000
-  uri                     = aws_lambda_function.stdefn.invoke_arn
+  uri                     = aws_lambda_function.geff.invoke_arn
 
   cache_key_parameters = null
 
@@ -295,7 +295,7 @@ resource "aws_api_gateway_integration" "xmlrpc_to_lambda" {
   type                    = "AWS_PROXY"
   content_handling        = "CONVERT_TO_TEXT"
   timeout_milliseconds    = 29000
-  uri                     = aws_lambda_function.stdefn.invoke_arn
+  uri                     = aws_lambda_function.geff.invoke_arn
 
   cache_key_parameters = null
 
