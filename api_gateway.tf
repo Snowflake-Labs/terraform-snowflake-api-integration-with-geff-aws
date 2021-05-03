@@ -307,10 +307,6 @@ resource "aws_cloudwatch_log_group" "api_gateway" {
   name = "API-Gateway-Execution-Logs_${aws_api_gateway_rest_api.ef_to_lambda.id}/${var.env}"
 
   retention_in_days = var.log_retention_days
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "aws_api_gateway_deployment" "geff" {

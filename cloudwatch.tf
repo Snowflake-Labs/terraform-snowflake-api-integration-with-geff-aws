@@ -29,8 +29,4 @@ resource "aws_iam_policy" "cloudwatch_write" {
       ]
     }
   )
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
