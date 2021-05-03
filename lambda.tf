@@ -41,11 +41,11 @@ resource "aws_iam_role" "geff" {
   )
 }
 
-resource "aws_iam_role_policy_attachment" "standard_lib_write_logs" {
+resource "aws_iam_role_policy_attachment" "geff_write_logs" {
   role       = aws_iam_role.geff.name
   policy_arn = aws_iam_policy.prod_cloudwatch_write.arn
 }
-resource "aws_iam_role_policy_attachment" "standard_lib_decrypt_secrets" {
+resource "aws_iam_role_policy_attachment" "geff_decrypt_secrets" {
   role       = aws_iam_role.geff.name
   policy_arn = aws_iam_policy.kms_decrypt.arn
 }

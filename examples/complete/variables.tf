@@ -9,26 +9,26 @@ variable "prefix" {
   default     = "example"
 }
 
-variable "snowflake_integration_user" {
+variable "aws_region" {
   type        = string
-  description = "user who will be calling the API Gateway"
-  default     = null
+  default     = "us-west-2"
 }
 
 variable "aws_cloudwatch_metric_namespace" {
   type        = string
-  description = "where EF can write CloudWatch Metrics"
+  description = "prefix for CloudWatch Metrics that GEFF writes"
   default     = "*"
 }
 
 variable "aws_deployment_stage_name" {
   type        = string
   default     = "prod"
-  description = "AWS stage name the Snowflake user will assume to deploy the API Gateway in your account"
+  description = "AWS API Gateway deployment stage name"
 }
 
 variable "snowflake_account" {
-  type = string
+  type        = string
+  sensitive   = true
 }
 
 variable "snowflake_role" {
