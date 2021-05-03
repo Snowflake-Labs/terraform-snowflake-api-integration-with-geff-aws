@@ -9,21 +9,21 @@ variable "prefix" {
   default     = "example"
 }
 
-variable "aws_region" {
-  type        = string
-  default     = "us-west-2"
-}
-
 variable "aws_cloudwatch_metric_namespace" {
   type        = string
   description = "prefix for CloudWatch Metrics that GEFF writes"
   default     = "*"
 }
 
-variable "aws_deployment_stage_name" {
+variable "log_retention_days" {
+  description = "Log retention period in days."
+  default     = 0
+}
+
+variable "env" {
   type        = string
-  default     = "prod"
-  description = "AWS API Gateway deployment stage name"
+  default     = "dev"
+  description = "Dev/Prod/Staging or any other custom environment name."
 }
 
 variable "snowflake_account" {

@@ -5,5 +5,5 @@ output "api_integration_name" {
 
 output "api_gateway_invoke_url" {
     description = "List of all invoked url"
-    value       = aws_api_gateway_deployment.prod.invoke_url
+    value       = aws_api_gateway_deployment.geff.invoke_url
 }

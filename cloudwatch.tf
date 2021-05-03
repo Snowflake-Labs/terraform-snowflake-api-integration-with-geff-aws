@@ -1,4 +1,4 @@
-resource "aws_iam_policy" "prod_cloudwatch_write" {
+resource "aws_iam_policy" "cloudwatch_write" {
   name = "${var.prefix}-cloudwatch-setup-and-write"
   path = "/service-role/"
 
@@ -7,19 +7,14 @@ resource "aws_iam_policy" "prod_cloudwatch_write" {
       Version = "2012-10-17"
       Statement = [
         {
-          Action   = "logs:CreateLogGroup"
-          Effect   = "Allow"
-          Resource = "arn:aws:logs:${var.aws_region}:${local.account_id}:*"
-        },
-        {
+          Sid    = "AllowWritingLogs",
+          Effect = "Allow",
           Action = [
-            "logs:CreateLogStream",
             "logs:PutLogEvents",
-          ]
-          Effect = "Allow"
-          Resource = [
-            "arn:aws:logs:${var.region}:${local.account_id}:log-group:/aws/lambda/${aws_lambda_function.geff.function_name}:*",
-          ]
+            "logs:CreateLogStream",
+            "logs:CreateLogGroup"
+          ],
+          Resource = "arn:aws:logs:*:*:*"
         },
         {
           Effect   = "Allow",
@@ -34,4 +29,8 @@ resource "aws_iam_policy" "prod_cloudwatch_write" {
       ]
     }
   )
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }

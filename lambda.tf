@@ -1,3 +1,13 @@
+resource "aws_cloudwatch_log_group" "geff" {
+  name              = "${var.prefix}-geff"
+  retention_in_days = var.log_retention_days
+
+  tags = {
+    Name = "${var.prefix}-geff"
+    Environment = var.env
+  }
+}
+
 data "archive_file" "lambda_code" {
   type        = "zip"
   source_dir  = "${path.module}/lambda-code"
@@ -10,7 +20,7 @@ data "archive_file" "lambda_code" {
 }
 
 resource "aws_lambda_function" "geff" {
-  function_name    = "${var.prefix}_external_function"
+  function_name    = "${var.prefix}_geff"
   role             = aws_iam_role.geff.arn
   handler          = "lambda_function.lambda_handler"
   memory_size      = "512"
@@ -22,7 +32,7 @@ resource "aws_lambda_function" "geff" {
 }
 
 resource "aws_iam_role" "geff" {
-  name = "${var.prefix}_external_function"
+  name = "${var.prefix}_geff"
   path = "/service-role/"
 
   assume_role_policy = jsonencode(
@@ -43,7 +53,7 @@ resource "aws_iam_role" "geff" {
 
 resource "aws_iam_role_policy_attachment" "geff_write_logs" {
   role       = aws_iam_role.geff.name
-  policy_arn = aws_iam_policy.prod_cloudwatch_write.arn
+  policy_arn = aws_iam_policy.cloudwatch_write.arn
 }
 resource "aws_iam_role_policy_attachment" "geff_decrypt_secrets" {
   role       = aws_iam_role.geff.name

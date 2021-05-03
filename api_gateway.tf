@@ -98,18 +98,18 @@ resource "aws_api_gateway_rest_api_policy" "ef_to_lambda" {
   rest_api_id = aws_api_gateway_rest_api.ef_to_lambda.id
 
   policy = jsonencode({
-      Version = "2012-10-17"
-      Statement = [
-        {
-          Effect = "Allow"
-          Principal = {
-            AWS = "arn:aws:sts::${local.account_id}:assumed-role/${var.prefix}-api-gateway-caller/snowflake"
-          }
-          Action   = "execute-api:Invoke"
-          Resource = "${aws_api_gateway_rest_api.ef_to_lambda.execution_arn}/*/POST/*"
-        },
-      ]
-    })
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:sts::${local.account_id}:assumed-role/${var.prefix}-api-gateway-caller/snowflake"
+        }
+        Action   = "execute-api:Invoke"
+        Resource = "${aws_api_gateway_rest_api.ef_to_lambda.execution_arn}/*/POST/*"
+      },
+    ]
+  })
 
 }
 
@@ -304,12 +304,16 @@ resource "aws_api_gateway_integration" "xmlrpc_to_lambda" {
 }
 
 resource "aws_cloudwatch_log_group" "api_gateway" {
-  name = "API-Gateway-Execution-Logs_${aws_api_gateway_rest_api.ef_to_lambda.id}/prod"
+  name = "API-Gateway-Execution-Logs_${aws_api_gateway_rest_api.ef_to_lambda.id}/${var.env}"
 
-  retention_in_days = 0 # never expire
+  retention_in_days = var.log_retention_days
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
-resource "aws_api_gateway_deployment" "prod" {
+resource "aws_api_gateway_deployment" "geff" {
   depends_on = [
     aws_api_gateway_integration.https_to_lambda,
     aws_api_gateway_integration.smtp_to_lambda,
@@ -329,17 +333,17 @@ resource "aws_api_gateway_deployment" "prod" {
   }
 }
 
-resource "aws_api_gateway_stage" "prod" {
-  deployment_id = aws_api_gateway_deployment.prod.id
+resource "aws_api_gateway_stage" "geff" {
+  deployment_id = aws_api_gateway_deployment.geff.id
   rest_api_id   = aws_api_gateway_rest_api.ef_to_lambda.id
-  stage_name    = var.aws_deployment_stage_name
+  stage_name    = var.env
 }
 
 resource "aws_api_gateway_method_settings" "enable_logging" {
   depends_on = [aws_api_gateway_account.api_gateway]
 
   rest_api_id = aws_api_gateway_rest_api.ef_to_lambda.id
-  stage_name  = aws_api_gateway_stage.prod.stage_name
+  stage_name  = aws_api_gateway_stage.geff.stage_name
   method_path = "*/*"
   settings {
     logging_level          = "INFO"

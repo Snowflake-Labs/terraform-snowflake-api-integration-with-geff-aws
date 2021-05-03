@@ -1,5 +1,6 @@
 variable "aws_region" {
   description = "The AWS region in which the AWS infrastructure is created."
+  type        = string
   default     = "us-west-2"
 }
 
@@ -9,21 +10,15 @@ variable "prefix" {
   default     = "example"
 }
 
-variable "aws_region" {
-  type        = string
-  default     = "us-west-2"
-}
-
 variable "aws_cloudwatch_metric_namespace" {
   type        = string
   description = "prefix for CloudWatch Metrics that GEFF writes"
   default     = "*"
 }
 
-variable "aws_deployment_stage_name" {
+variable "env" {
   type        = string
   default     = "prod"
-  description = "AWS API Gateway deployment stage name"
 }
 
 variable "snowflake_account" {

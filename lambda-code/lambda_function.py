@@ -23,6 +23,8 @@ def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
     Returns:
         Dict[Text, Any]: Represents the response state and data.
     """
+    print('Found a destination header and hence using async_flow_init()')
+
     headers = event['headers']
     batch_id = headers['sf-external-function-query-batch-id']
     destination = headers['sf-custom-destination']
@@ -56,9 +58,14 @@ def async_flow_poll(batch_id: Text, destination: Text) -> Dict[Text, Any]:
     Returns:
         Dict[str, Any]:
     """
-    write_driver = import_module(f'drivers.destination_{urlparse(destination).scheme}')
+    print('Destination header not found in a GET and hence using async_flow_poll()')
+
+    write_driver = import_module(
+        f'drivers.destination_{urlparse(destination).scheme}')
     # Ignoring style due to dynamic import
-    status_body = write_driver.check_status(destination, batch_id)  # type: ignore
+    status_body = write_driver.check_status(   # type: ignore
+        destination, batch_id
+    )
 
     if status_body:
         return {'statusCode': 200, 'body': status_body}
@@ -77,14 +84,14 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
     Returns:
         Dict[Text, Any]: Represents the response state and data.
     """
+    print('Destination header not found in a POST and hence using sync_flow()')
     headers = event['headers']
-    response_encoding = headers.pop('sf-custom-response-encoding', None)
-    write_uri = headers.get('write-uri')
     req_body = loads(event['body'])
-    destination_driver = import_module(
-        f'drivers.destination_{urlparse(write_uri).scheme}'
-    )
+
+    write_uri = headers.get('write-uri')
     batch_id = headers['sf-external-function-query-batch-id']
+    response_encoding = headers.pop('sf-custom-response-encoding', None)
+
     res_data = []
 
     for row_number, *args in req_body['data']:
@@ -103,6 +110,9 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
             ).process_row  # type: ignore
             row_result = process_row(*path, **process_row_params)
             if write_uri:
+                destination_driver = import_module(
+                    f'drivers.destination_{urlparse(write_uri).scheme}'
+                )
                 # Write s3 data and return confirmation
                 # Ignoring style due to dynamic import
                 row_result = destination_driver.write(  # type: ignore
@@ -142,9 +152,12 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
 
 
 def lambda_handler(event: Any, context: Any) -> Dict[Text, Any]:
-    destination = event['headers'].get('sf-custom-destination')
-    batch_id = event['headers']['sf-external-function-query-batch-id']
     method = event.get('httpMethod', 'GET')
+    headers = event['headers']
+
+    destination = headers.get('sf-custom-destination')
+    batch_id = headers['sf-external-function-query-batch-id']
+    print(destination)
 
     # The first request is always a POST unless SF is polling for status.
     if destination:  # POST + dest header == async flow
@@ -154,4 +167,4 @@ def lambda_handler(event: Any, context: Any) -> Dict[Text, Any]:
     elif method == 'POST':  # POST + no dest header == Regular request for data
         return sync_flow(event, context)
     else:
-        return create_response(200, "Unexpected state.")
+        return create_response(200, "Unexpected lambda state.")
