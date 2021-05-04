@@ -59,11 +59,9 @@ def async_flow_poll(batch_id: Text, destination: Text) -> Dict[Text, Any]:
         Dict[str, Any]:
     """
     print('Destination header not found in a GET and hence using async_flow_poll()')
-
     write_driver = import_module(f'drivers.destination_{urlparse(destination).scheme}')
     # Ignoring style due to dynamic import
     status_body = write_driver.check_status(destination, batch_id)  # type: ignore
-
     if status_body:
         return {'statusCode': 200, 'body': status_body}
     else:
@@ -127,9 +125,11 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
             ]
         )
 
-    # Write to s3 or return data synchronously
+    # Write data to s3 or return data synchronously
     if write_uri:
-        response = destination_driver.write(write_uri, batch_id, res_data)  # type: ignore
+        response = destination_driver.write(  # type: ignore
+            write_uri, batch_id, res_data
+        )
     else:
         data_dumps = dumps({'data': res_data})
         response = {'statusCode': 200, 'body': data_dumps}
