@@ -1,0 +1,7 @@
+aws_region                  = "us-west-1"
+prefix                      = "any_custom_prefix"
+snowflake_account           = "snowflake_account_id"
+snowflake_role              = "role_name"
+snowflake_username          = "username"
+snowflake_password          = "password"
+env                         = "dev/prod/staging/test"
