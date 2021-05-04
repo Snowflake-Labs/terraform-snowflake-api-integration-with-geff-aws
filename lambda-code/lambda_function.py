@@ -126,30 +126,32 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
                 zip(dumps(row_result)) if response_encoding == 'gzip' else row_result,
             ]
         )
+
+    # Write to s3 or return data synchronously
     if write_uri:
-        destination_driver.write(write_uri, batch_id, res_data)  # type: ignore
+        response = destination_driver.write(write_uri, batch_id, res_data)  # type: ignore
     else:
         data_dumps = dumps({'data': res_data})
+        response = {'statusCode': 200, 'body': data_dumps}
 
-        if len(data_dumps) > 6_000_000:
-            data_dumps = dumps(
-                {
-                    'data': [
-                        [
-                            rn,
-                            {
-                                'error': (
-                                    f'Response size ({len(data_dumps)} bytes) will likely'
-                                    'exceeded maximum allowed payload size (6291556 bytes).'
-                                )
-                            },
-                        ]
-                        for rn, *args in req_body['data']
+    if len(response) > 6_000_000:
+        response = dumps(
+            {
+                'data': [
+                    [
+                        rn,
+                        {
+                            'error': (
+                                f'Response size ({len(response)} bytes) will likely'
+                                'exceeded maximum allowed payload size (6291556 bytes).'
+                            )
+                        },
                     ]
-                }
-            )
-
-        return {'statusCode': 200, 'body': data_dumps}
+                    for rn, *args in req_body['data']
+                ]
+            }
+        )
+    return response
 
 
 def lambda_handler(event: Any, context: Any) -> Dict[Text, Any]:
