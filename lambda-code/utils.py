@@ -1,9 +1,16 @@
+import json
+import os
 import re
+from codecs import encode
+from json import dumps
+from typing import Any, Dict, Optional, Text
+
+import boto3
 
 
 def pick(path: str, d: dict):
     # path e.g. "a.b.c"
-    retval = d
+    retval: Optional[Any] = d
     for p in path.split('.'):
         if p and retval:
             retval = retval.get(p)
@@ -18,9 +25,7 @@ def parse_header_links(value):
 
     :rtype: list
     """
-
     links = []
-
     replace_chars = ' \'"'
 
     value = value.strip(replace_chars)
@@ -46,3 +51,56 @@ def parse_header_links(value):
         links.append(link)
 
     return links
+
+
+def zip(s, chunk_size=1_000_000):
+    '''zip in pieces, as it is tough to inflate large chunks in Snowflake per UDF mem limits'''
+
+    def do_zip(s):
+        return encode(encode(s.encode(), encoding='zlib'), 'base64').decode()
+
+    if len(s) > chunk_size:
+        return [do_zip(s[:chunk_size])] + zip(s[chunk_size:], chunk_size)
+    return [do_zip(s)]
+
+
+def format(s, ps):
+    """format string s with params ps, preserving type of singular references
+
+    >>> format('{0}', [{'a': 'b'}])
+    {'a': 'b'}
+
+    >>> format('{"z": [{0}]}', [{'a': 'b'}])
+    """
+
+    def replace_refs(s, ps):
+        for i, p in enumerate(ps):
+            old = '{' + str(i) + '}'
+            new = dumps(p) if isinstance(p, (list, dict)) else str(p)
+            s = s.replace(old, new)
+        return s
+
+    m = re.match('{(\d+)}', s)
+    return ps[int(m.group(1))] if m else replace_refs(s, ps)
+
+
+def create_response(code: int, msg: Text) -> Dict[Text, Any]:
+    return {'statusCode': code, 'body': msg}
+
+
+def invoke_process_lambda(event: Any, lambda_name: Text) -> Dict[Text, Any]:
+    # Create payload to be sent to lambda
+    invoke_payload = json.dumps(event)
+
+    # Invoke processing lambda asynchronously, this allows
+    # processing to continue while polls are handled with a 202 status.
+    lambda_client = boto3.client(
+        'lambda',
+        region_name=os.environ['AWS_REGION'],
+    )
+    lambda_response = lambda_client.invoke(
+        FunctionName=lambda_name, InvocationType='Event', Payload=invoke_payload
+    )
+
+    # Returns 202 on success if InvocationType = 'Event'
+    return lambda_response
