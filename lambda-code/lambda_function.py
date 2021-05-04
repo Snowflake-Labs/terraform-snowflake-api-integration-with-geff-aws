@@ -2,7 +2,7 @@ import os.path
 import sys
 from importlib import import_module
 from json import dumps, loads
-from typing import Any, Dict, Optional, Text
+from typing import Any, Dict, Text
 from urllib.parse import urlparse
 
 from utils import create_response, format, invoke_process_lambda, zip
@@ -10,6 +10,9 @@ from utils import create_response, format, invoke_process_lambda, zip
 # pip install --target ./site-packages -r requirements.txt
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dir_path, 'site-packages'))
+
+BATCH_ID_HEADER = 'sf-external-function-query-batch-id'
+DESTINATION_URI_HEADER = 'sf-custom-destination-uri'
 
 
 def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
@@ -26,11 +29,12 @@ def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
     print('Found a destination header and hence using async_flow_init()')
 
     headers = event['headers']
-    batch_id = headers['sf-external-function-query-batch-id']
-    destination = headers['sf-custom-destination']
-    headers.pop('sf-custom-destination')
+    batch_id = headers[BATCH_ID_HEADER]
+    destination = headers[DESTINATION_URI_HEADER]
+    headers.pop(DESTINATION_URI_HEADER)
     headers['write-uri'] = destination
     lambda_name = context.function_name
+    print(destination)
 
     destination_driver = import_module(
         f'drivers.destination_{urlparse(destination).scheme}'
@@ -83,7 +87,7 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
     headers = event['headers']
     req_body = loads(event['body'])
 
-    batch_id = headers['sf-external-function-query-batch-id']
+    batch_id = headers[BATCH_ID_HEADER]
     response_encoding = headers.pop('sf-custom-response-encoding', None)
     write_uri = headers.get('write-uri')
 
@@ -158,8 +162,8 @@ def lambda_handler(event: Any, context: Any) -> Dict[Text, Any]:
     method = event.get('httpMethod', 'GET')
     headers = event['headers']
 
-    destination = headers.get('sf-custom-destination')
-    batch_id = headers['sf-external-function-query-batch-id']
+    destination = headers.get()
+    batch_id = headers[BATCH_ID_HEADER]
     print(destination)
 
     # The first request is always a POST unless SF is polling for status.

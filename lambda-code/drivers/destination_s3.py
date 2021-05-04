@@ -22,9 +22,12 @@ def parse_destination_uri(destination: Text) -> Tuple[Text, Text]:
     Returns:
         Tuple[Text, Text]: [description]
     """
+    print(f'destination from header is {destination}')
     parsed_url = urlparse(destination)
     bucket = parsed_url.netloc
+    print(f'Using path = {parsed_url.path} to parse prefix.')
     prefix = parsed_url.path.split('/', 2)[1]
+    print(f'Parsed bucket = {bucket}, prefix = {prefix}.')
     return bucket, prefix
 
 

@@ -2,7 +2,7 @@ from base64 import b64encode
 from email.utils import parsedate_to_datetime
 from json import JSONDecodeError, dumps, loads
 from re import match
-from typing import Dict, Union, Optional, List, Any
+from typing import Any, Dict, List, Optional, Text, Union
 from urllib.error import HTTPError, URLError
 from urllib.parse import parse_qsl
 from urllib.request import Request, urlopen
@@ -20,18 +20,19 @@ def parse_header_dict(value):
 
 
 def process_row(
-    data: Optional[str] = None,
-    base_url: str = '',
-    url: str = '',
-    json: Optional[str] = None,
-    method: str = 'get',
-    headers: str = '',
-    kwargs: Union[Dict, str] = '',
-    auth: str = None,
-    params: str = '',
+    data: Optional[Text] = None,
+    base_url: Text = '',
+    url: Text = '',
+    json: Optional[Text] = None,
+    method: Text = 'get',
+    headers: Text = '',
+    kwargs: Union[Dict, Text] = '',
+    auth: Text = None,
+    params: Text = '',
     verbose: bool = False,
-    cursor: str = '',
-    results_path: str = '',
+    cursor: Text = '',
+    results_path: Text = '',
+    destination_uri: Text = '',
 ):
     if url:
         req_url = base_url + url
@@ -49,8 +50,7 @@ def process_row(
     req_headers = {
         k: v.format(**req_kwargs) for k, v in parse_header_dict(headers).items()
     }
-    req_headers.setdefault(
-        'User-Agent', 'Snowflake Generic External Function 1.0')
+    req_headers.setdefault('User-Agent', 'Snowflake Generic External Function 1.0')
     if auth is not None:
         auth = decrypt_if_encrypted(auth)
         assert auth is not None
@@ -93,8 +93,7 @@ def process_row(
     row_data: List[Any] = []
 
     while next_url:
-        req = Request(next_url, method=req_method,
-                      headers=req_headers, data=req_data)
+        req = Request(next_url, method=req_method, headers=req_headers, data=req_data)
         links_headers = None
         try:
             res = urlopen(req)
