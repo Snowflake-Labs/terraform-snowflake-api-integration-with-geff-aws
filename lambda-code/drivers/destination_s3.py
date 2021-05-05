@@ -89,14 +89,31 @@ def write(
     destination: Text,
     batch_id: Text,
     datum: Dict,
-    row_index: int = None,
+    row_index: int,
 ) -> Dict[str, Any]:
     bucket, prefix = parse_destination_uri(destination)
     encoded_datum = json.dumps(datum)
-    if not row_index:
-        prefixed_filename = f'{prefix}/{batch_id}/{MANIFEST_FILENAME}'
-    else:
-        prefixed_filename = f'{prefix}/{batch_id}/row-{row_index}.data.json'
+    prefixed_filename = f'{prefix}/{batch_id}/row-{row_index}.data.json'
+    s3_uri = f's3://{bucket}/{prefixed_filename}'
+
+    return {
+        'response': write_to_s3(
+            bucket,
+            prefixed_filename,
+            encoded_datum,
+        ),
+        'uri': s3_uri,
+    }
+
+
+def fin(
+    destination: Text,
+    batch_id: Text,
+    datum: Dict,
+) -> Dict[str, Any]:
+    bucket, prefix = parse_destination_uri(destination)
+    encoded_datum = json.dumps(datum)
+    prefixed_filename = f'{prefix}/{batch_id}/{MANIFEST_FILENAME}'
     s3_uri = f's3://{bucket}/{prefixed_filename}'
 
     return {
@@ -120,8 +137,10 @@ def check_status(destination: Text, batch_id: Text) -> Optional[List[Any]]:
         json_object = json.loads(content.read())
     except ClientError as ce:
         if ce.response['Error']['Code'] == 'NoSuchKey':
+            print('No manifest file  found returning None.')
             return None
     else:
+        print('Manifest file found returning contents.')
         return json_object
 
     return None

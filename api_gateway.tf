@@ -3,7 +3,6 @@
   logging API Gateway logging is set up per-region
 
 */
-
 resource "aws_iam_role" "gateway_logger" {
   name = "${var.prefix}-api-gateway-logger"
   path = "/"
@@ -35,7 +34,6 @@ resource "aws_api_gateway_account" "api_gateway" {
   rest is API Gateway specific to External Functions
 
 */
-
 resource "aws_iam_role" "gateway_caller" {
   name = "${var.prefix}-api-gateway-caller"
   path = "/"
@@ -68,7 +66,7 @@ resource "aws_iam_role_policy" "gateway_caller" {
       {
         Effect   = "Allow"
         Action   = "execute-api:Invoke"
-        Resource = "${aws_api_gateway_rest_api.ef_to_lambda.execution_arn}/*/POST/*"
+        Resource = "${aws_api_gateway_rest_api.ef_to_lambda.execution_arn}/*/*/*"
       }
     ]
   })
@@ -106,7 +104,7 @@ resource "aws_api_gateway_rest_api_policy" "ef_to_lambda" {
           AWS = "arn:aws:sts::${local.account_id}:assumed-role/${var.prefix}-api-gateway-caller/snowflake"
         }
         Action   = "execute-api:Invoke"
-        Resource = "${aws_api_gateway_rest_api.ef_to_lambda.execution_arn}/*/POST/*"
+        Resource = "${aws_api_gateway_rest_api.ef_to_lambda.execution_arn}/*/*/*"
       },
     ]
   })
@@ -148,7 +146,7 @@ resource "aws_api_gateway_integration" "https_to_lambda" {
   type                    = "AWS_PROXY"
   content_handling        = "CONVERT_TO_TEXT"
   timeout_milliseconds    = 29000
-  uri                     = aws_lambda_function.geff.invoke_arn
+  uri                     = aws_lambda_function.geff_lambda.invoke_arn
 
   cache_key_parameters = null
 
@@ -187,7 +185,7 @@ resource "aws_api_gateway_integration" "smtp_to_lambda" {
   type                    = "AWS_PROXY"
   content_handling        = "CONVERT_TO_TEXT"
   timeout_milliseconds    = 29000
-  uri                     = aws_lambda_function.geff.invoke_arn
+  uri                     = aws_lambda_function.geff_lambda.invoke_arn
 
   cache_key_parameters = null
 
@@ -226,7 +224,7 @@ resource "aws_api_gateway_integration" "cloudwatch_metric_to_lambda" {
   type                    = "AWS_PROXY"
   content_handling        = "CONVERT_TO_TEXT"
   timeout_milliseconds    = 29000
-  uri                     = aws_lambda_function.geff.invoke_arn
+  uri                     = aws_lambda_function.geff_lambda.invoke_arn
 
   cache_key_parameters = null
 
@@ -262,7 +260,7 @@ resource "aws_api_gateway_integration" "boto3_to_lambda" {
   type                    = "AWS_PROXY"
   content_handling        = "CONVERT_TO_TEXT"
   timeout_milliseconds    = 29000
-  uri                     = aws_lambda_function.geff.invoke_arn
+  uri                     = aws_lambda_function.geff_lambda.invoke_arn
 
   cache_key_parameters = null
 
@@ -295,7 +293,7 @@ resource "aws_api_gateway_integration" "xmlrpc_to_lambda" {
   type                    = "AWS_PROXY"
   content_handling        = "CONVERT_TO_TEXT"
   timeout_milliseconds    = 29000
-  uri                     = aws_lambda_function.geff.invoke_arn
+  uri                     = aws_lambda_function.geff_lambda.invoke_arn
 
   cache_key_parameters = null
 

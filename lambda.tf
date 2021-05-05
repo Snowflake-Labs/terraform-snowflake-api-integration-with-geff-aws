@@ -19,9 +19,9 @@ data "archive_file" "lambda_code" {
   ]
 }
 
-resource "aws_lambda_function" "geff" {
+resource "aws_lambda_function" "geff_lambda" {
   function_name    = "${var.prefix}_geff"
-  role             = aws_iam_role.geff.arn
+  role             = aws_iam_role.geff_lambda_role.arn
   handler          = "lambda_function.lambda_handler"
   memory_size      = "512"
   runtime          = "python3.8"
@@ -31,7 +31,7 @@ resource "aws_lambda_function" "geff" {
   source_code_hash = data.archive_file.lambda_code.output_base64sha256
 }
 
-resource "aws_iam_role" "geff" {
+resource "aws_iam_role" "geff_lambda_role" {
   name = "${var.prefix}_geff"
   path = "/service-role/"
 
@@ -52,17 +52,18 @@ resource "aws_iam_role" "geff" {
 }
 
 resource "aws_iam_role_policy_attachment" "geff_write_logs" {
-  role       = aws_iam_role.geff.name
+  role       = aws_iam_role.geff_lambda_role.name
   policy_arn = aws_iam_policy.cloudwatch_write.arn
 }
 
 resource "aws_iam_role_policy_attachment" "geff_decrypt_secrets" {
-  role       = aws_iam_role.geff.name
+  role       = aws_iam_role.geff_lambda_role.name
   policy_arn = aws_iam_policy.kms_decrypt.arn
 }
 
 resource "aws_iam_policy" "geff_lambda_policy" {
-  # 1. Read Write to S3 bucket
+  # 1. read and write to S3 bucket
+  # 2. Allow lambda to invoke lambda
   name = "${var.prefix}-geff-lambda-policy"
 
   policy = jsonencode({
@@ -83,22 +84,22 @@ resource "aws_iam_policy" "geff_lambda_policy" {
       {
         "Effect" : "Allow",
         "Action" : "lambda:InvokeFunction",
-        "Resource" : aws_lambda_function.geff.arn
+        "Resource" : aws_lambda_function.geff_lambda.arn
       },
     ]
   })
 }
 
 resource "aws_iam_role_policy_attachment" "geff_lambda_policy_attachment" {
-  role       = aws_iam_role.geff.name
+  role       = aws_iam_role.geff_lambda_role.name
   policy_arn = aws_iam_policy.geff_lambda_policy.arn
 }
 
 resource "aws_lambda_permission" "api_gateway" {
-  function_name = aws_lambda_function.geff.function_name
+  function_name = aws_lambda_function.geff_lambda.function_name
   principal     = "apigateway.amazonaws.com"
   action        = "lambda:InvokeFunction"
   source_arn    = "${aws_api_gateway_rest_api.ef_to_lambda.execution_arn}/*/*"
 
-  depends_on = [aws_lambda_function.geff]
+  depends_on = [aws_lambda_function.geff_lambda]
 }
