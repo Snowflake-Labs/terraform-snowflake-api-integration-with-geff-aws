@@ -55,9 +55,43 @@ resource "aws_iam_role_policy_attachment" "geff_write_logs" {
   role       = aws_iam_role.geff.name
   policy_arn = aws_iam_policy.cloudwatch_write.arn
 }
+
 resource "aws_iam_role_policy_attachment" "geff_decrypt_secrets" {
   role       = aws_iam_role.geff.name
   policy_arn = aws_iam_policy.kms_decrypt.arn
+}
+
+resource "aws_iam_policy" "geff_lambda_policy" {
+  # 1. Read Write to S3 bucket
+  name = "${var.prefix}-geff-lambda-policy"
+
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:GetObjectVersion",
+          "s3:DeleteObject",
+          "s3:DeleteObjectVersion"
+        ],
+        # "Resource" : "${aws_s3_bucket.geff_bucket.arn}/*"
+        "Resource" : "arn:aws:s3:::prasanthk-test-bucket/*"
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : "lambda:InvokeFunction",
+        "Resource" : aws_lambda_function.geff.arn
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "geff_lambda_policy_attachment" {
+  role       = aws_iam_role.geff.name
+  policy_arn = aws_iam_policy.geff_lambda_policy.arn
 }
 
 resource "aws_lambda_permission" "api_gateway" {

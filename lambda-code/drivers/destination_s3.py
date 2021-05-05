@@ -78,11 +78,11 @@ def write_to_s3(bucket: Text, filename: Text, content: AnyStr) -> Dict[Text, Any
     )
 
 
-def init(batch_id: Text, destination: Text):
+def init(destination: Text, batch_id: Text):
     bucket, prefix = parse_destination_uri(destination)
     content = ''  # We use empty body for creating a folder
     prefixed_folder = f'{prefix}/{batch_id}/'
-    return write_to_s3(bucket, content, prefixed_folder)
+    return write_to_s3(bucket, prefixed_folder, content)
 
 
 def write(

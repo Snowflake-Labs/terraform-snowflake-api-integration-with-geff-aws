@@ -323,6 +323,7 @@ resource "aws_api_gateway_deployment" "geff" {
   }
 
   rest_api_id = aws_api_gateway_rest_api.ef_to_lambda.id
+  # stage_description = "Deployed at ${timestamp()}"
 
   lifecycle {
     create_before_destroy = true

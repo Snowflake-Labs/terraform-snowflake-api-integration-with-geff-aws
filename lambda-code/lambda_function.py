@@ -34,7 +34,7 @@ def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
     headers.pop(DESTINATION_URI_HEADER)
     headers['write-uri'] = destination
     lambda_name = context.function_name
-    print(destination)
+    print(f'async_flow_init() received destination: {destination}')
 
     destination_driver = import_module(
         f'drivers.destination_{urlparse(destination).scheme}'
@@ -90,6 +90,7 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
     batch_id = headers[BATCH_ID_HEADER]
     response_encoding = headers.pop('sf-custom-response-encoding', None)
     write_uri = headers.get('write-uri')
+    print(f'sync_flow() received destination: {write_uri}')
 
     if write_uri:
         destination_driver = import_module(
@@ -162,7 +163,7 @@ def lambda_handler(event: Any, context: Any) -> Dict[Text, Any]:
     method = event.get('httpMethod', 'GET')
     headers = event['headers']
 
-    destination = headers.get()
+    destination = headers.get(DESTINATION_URI_HEADER)
     batch_id = headers[BATCH_ID_HEADER]
     print(destination)
 
