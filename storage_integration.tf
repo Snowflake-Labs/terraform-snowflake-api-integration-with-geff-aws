@@ -3,6 +3,11 @@ resource "aws_s3_bucket" "geff_bucket" {
   acl    = "private"
 }
 
+resource "aws_s3_bucket_object" "geff_folder" {
+  bucket = aws_s3_bucket.geff_bucket.id
+  key    = "geff/"
+}
+
 resource "snowflake_storage_integration" "geff_storage_integration" {
   name                      = "${var.prefix}-geff-storage-integration"
   type                      = "EXTERNAL_STAGE"
