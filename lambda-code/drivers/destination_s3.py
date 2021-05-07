@@ -78,7 +78,7 @@ def write_to_s3(bucket: Text, filename: Text, content: AnyStr) -> Dict[Text, Any
     )
 
 
-def init(destination: Text, batch_id: Text):
+def initialize(destination: Text, batch_id: Text):
     bucket, prefix = parse_destination_uri(destination)
     content = ''  # We use empty body for creating a folder
     prefixed_folder = f'{prefix}/{batch_id}/'
@@ -106,7 +106,7 @@ def write(
     }
 
 
-def fin(
+def finalize(
     destination: Text,
     batch_id: Text,
     datum: Dict,
@@ -137,10 +137,10 @@ def check_status(destination: Text, batch_id: Text) -> Optional[List[Any]]:
         json_object = json.loads(content.read())
     except ClientError as ce:
         if ce.response['Error']['Code'] == 'NoSuchKey':
-            print('No manifest file  found returning None.')
+            print('No manifest file found returning None.')
             return None
     else:
-        print('Manifest file found returning contents.')
+        print(f'Manifest file found returning contents. {json_object}')
         return json_object
 
     return None

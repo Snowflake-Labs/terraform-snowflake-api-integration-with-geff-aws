@@ -1,3 +1,4 @@
+import os
 import os.path
 import sys
 from importlib import import_module
@@ -20,7 +21,7 @@ def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
     Handles the async part of the request flows.
 
     Args:
-        event (Any):
+        event (Any): Has the event as received by the lambda_handler()
         context (Any): Has the function context. Defaults to None.
 
     Returns:
@@ -40,7 +41,7 @@ def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
         f'drivers.destination_{urlparse(destination).scheme}'
     )
     # Ignoring style due to dynamic import
-    destination_driver.init(destination, batch_id)  # type: ignore
+    destination_driver.initialize(destination, batch_id)  # type: ignore
 
     lambda_response = invoke_process_lambda(event, lambda_name)
     if lambda_response['StatusCode'] != 202:
@@ -49,39 +50,40 @@ def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
         return {'statusCode': 202}
 
 
-def async_flow_poll(batch_id: Text, destination: Text) -> Dict[Text, Any]:
-    """
-    Repeatedly checks on the status of the batch, and returns the result after the
-    processing has been completed
+def async_flow_poll(destination: Text, batch_id: Text) -> Dict[Text, Any]:
+    """Repeatedly checks on the status of the batch, and returns
+    the result after the processing has been completed.
 
     Args:
-        event (Any):
-        destination (str):
-        context (Any):
+        destination (Text): This is the destination parsed
+        batch_id (Text):
 
     Returns:
-        Dict[str, Any]:
+        Dict[Text, Any]: This is the return value with the status code of 200 or 202 as per the status of the write.
     """
-    print('Destination header not found in a GET and hence using async_flow_poll()')
+    print('async_flow_poll() called as destination header was not found in a GET.')
     write_driver = import_module(f'drivers.destination_{urlparse(destination).scheme}')
+
     # Ignoring style due to dynamic import
     status_body = write_driver.check_status(destination, batch_id)  # type: ignore
     if status_body:
+        print(f'Manifest found return status code 200.')
         return {'statusCode': 200, 'body': status_body}
     else:
+        print(f'Manifest not found return status code 202.')
         return {'statusCode': 202}
 
 
 def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
     """
-    Handles the synchronous part of the sync + async flows.
+    Handles the synchronous part of the generic lambda flows.
 
     Args:
-        event (Any):
+        event (Any): This the event object as received by the lambda_handler()
         context (Any): Has the function context. Defaults to None.
 
     Returns:
-        Dict[Text, Any]: Represents the response state and data.
+        Dict[Text, Any]: Represents the response status and data.
     """
     print('Destination header not found in a POST and hence using sync_flow()')
     headers = event['headers']
@@ -132,9 +134,9 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
 
     # Write data to s3 or return data synchronously
     if write_uri:
-        response = destination_driver.finish(  # type: ignore
+        response = destination_driver.finalize(
             write_uri, batch_id, res_data
-        )
+        )  # type: ignore
     else:
         data_dumps = dumps({'data': res_data})
         response = {'statusCode': 200, 'body': data_dumps}
@@ -162,16 +164,17 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
 def lambda_handler(event: Any, context: Any) -> Dict[Text, Any]:
     method = event.get('httpMethod', 'GET')
     headers = event['headers']
+    print(f'lambda_handler() called with headers: {headers}')
 
     destination = headers.get(DESTINATION_URI_HEADER)
     batch_id = headers[BATCH_ID_HEADER]
-    print(destination)
+    print(f'lambda_handler() called with destination: {destination}')
 
     # The first request is always a POST unless SF is polling for status.
     if destination:  # POST + dest header == async flow
         return async_flow_init(event, context)
     elif method == 'GET':  # First request being GET == request is a snowflake poll
-        return async_flow_poll(destination, batch_id)
+        return async_flow_poll(os.environ['S3_BUCKET_URI'], batch_id)
     elif method == 'POST':  # POST + no dest header == Regular request for data
         return sync_flow(event, context)
     else:

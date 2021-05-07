@@ -1,3 +1,4 @@
+# Dont enter secrets into this file. Copy this file as example.tfvars and then add relavent config variables.
 aws_region                  = "us-west-1"
 prefix                      = "any_custom_prefix"
 snowflake_account           = "snowflake_account_id"

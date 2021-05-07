@@ -1,7 +1,6 @@
 resource "aws_cloudwatch_log_group" "geff" {
   name              = "/aws/lambda/${var.prefix}-geff"
   retention_in_days = var.log_retention_days
-
   tags = {
     Name        = "${var.prefix}-geff"
     Environment = var.env
@@ -29,26 +28,35 @@ resource "aws_lambda_function" "geff_lambda" {
   publish          = null
   filename         = data.archive_file.lambda_code.output_path
   source_code_hash = data.archive_file.lambda_code.output_base64sha256
+
+  depends_on = [
+    aws_s3_bucket.geff_bucket,
+    aws_s3_bucket_object.geff_folder
+  ]
+
+  environment {
+    variables = {
+      S3_BUCKET_URI = "s3://${aws_s3_bucket.geff_bucket.id}/${aws_s3_bucket_object.geff_folder.id}"
+    }
+  }
 }
 
 resource "aws_iam_role" "geff_lambda_role" {
   name = "${var.prefix}_geff"
   path = "/service-role/"
 
-  assume_role_policy = jsonencode(
-    {
-      Version = "2012-10-17",
-      Statement = [
-        {
-          Action = "sts:AssumeRole",
-          Principal = {
-            Service = "lambda.amazonaws.com"
-          },
-          Effect = "Allow"
-        }
-      ]
-    }
-  )
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        },
+        Effect = "Allow"
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "geff_write_logs" {
@@ -78,14 +86,13 @@ resource "aws_iam_policy" "geff_lambda_policy" {
           "s3:DeleteObject",
           "s3:DeleteObjectVersion"
         ],
-        # "Resource" : "${aws_s3_bucket.geff_bucket.arn}/*"
-        "Resource" : "arn:aws:s3:::prasanthk-test-bucket/*"
+        "Resource" : "${aws_s3_bucket.geff_bucket.arn}/*"
       },
       {
         "Effect" : "Allow",
         "Action" : "lambda:InvokeFunction",
         "Resource" : aws_lambda_function.geff_lambda.arn
-      },
+      }
     ]
   })
 }

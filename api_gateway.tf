@@ -1,11 +1,10 @@
 /*
-
   logging API Gateway logging is set up per-region
-
 */
 resource "aws_iam_role" "gateway_logger" {
   name = "${var.prefix}-api-gateway-logger"
   path = "/"
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -30,13 +29,12 @@ resource "aws_api_gateway_account" "api_gateway" {
 }
 
 /*
-
   rest is API Gateway specific to External Functions
-
 */
 resource "aws_iam_role" "gateway_caller" {
   name = "${var.prefix}-api-gateway-caller"
   path = "/"
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -108,7 +106,6 @@ resource "aws_api_gateway_rest_api_policy" "ef_to_lambda" {
       },
     ]
   })
-
 }
 
 resource "aws_api_gateway_resource" "https" {
@@ -123,6 +120,7 @@ resource "aws_api_gateway_method" "https_post" {
   http_method    = "POST"
   authorization  = "AWS_IAM"
   request_models = {}
+
   request_parameters = {
     "method.request.header.sf-custom-base-url"      = false
     "method.request.header.sf-custom-url"           = false
@@ -147,11 +145,9 @@ resource "aws_api_gateway_integration" "https_to_lambda" {
   content_handling        = "CONVERT_TO_TEXT"
   timeout_milliseconds    = 29000
   uri                     = aws_lambda_function.geff_lambda.invoke_arn
-
-  cache_key_parameters = null
-
-  request_parameters = {}
-  request_templates  = {}
+  cache_key_parameters    = null
+  request_parameters      = {}
+  request_templates       = {}
 }
 
 resource "aws_api_gateway_resource" "smtp" {
@@ -166,6 +162,7 @@ resource "aws_api_gateway_method" "smtp_post" {
   http_method    = "POST"
   authorization  = "AWS_IAM"
   request_models = {}
+
   request_parameters = {
     "method.request.header.sf-custom-host"      = false
     "method.request.header.sf-custom-port"      = false
@@ -186,11 +183,9 @@ resource "aws_api_gateway_integration" "smtp_to_lambda" {
   content_handling        = "CONVERT_TO_TEXT"
   timeout_milliseconds    = 29000
   uri                     = aws_lambda_function.geff_lambda.invoke_arn
-
-  cache_key_parameters = null
-
-  request_parameters = {}
-  request_templates  = {}
+  cache_key_parameters    = null
+  request_parameters      = {}
+  request_templates       = {}
 }
 
 resource "aws_api_gateway_resource" "cloudwatch_metric" {
@@ -205,6 +200,7 @@ resource "aws_api_gateway_method" "cloudwatch_metric_post" {
   http_method    = "POST"
   authorization  = "AWS_IAM"
   request_models = {}
+
   request_parameters = {
     "method.request.header.sf-custom-namespace"  = false
     "method.request.header.sf-custom-name"       = false
@@ -225,11 +221,9 @@ resource "aws_api_gateway_integration" "cloudwatch_metric_to_lambda" {
   content_handling        = "CONVERT_TO_TEXT"
   timeout_milliseconds    = 29000
   uri                     = aws_lambda_function.geff_lambda.invoke_arn
-
-  cache_key_parameters = null
-
-  request_parameters = {}
-  request_templates  = {}
+  cache_key_parameters    = null
+  request_parameters      = {}
+  request_templates       = {}
 }
 
 resource "aws_api_gateway_resource" "boto3" {
@@ -261,11 +255,9 @@ resource "aws_api_gateway_integration" "boto3_to_lambda" {
   content_handling        = "CONVERT_TO_TEXT"
   timeout_milliseconds    = 29000
   uri                     = aws_lambda_function.geff_lambda.invoke_arn
-
-  cache_key_parameters = null
-
-  request_parameters = {}
-  request_templates  = {}
+  cache_key_parameters    = null
+  request_parameters      = {}
+  request_templates       = {}
 }
 
 resource "aws_api_gateway_resource" "xmlrpc" {
@@ -294,16 +286,13 @@ resource "aws_api_gateway_integration" "xmlrpc_to_lambda" {
   content_handling        = "CONVERT_TO_TEXT"
   timeout_milliseconds    = 29000
   uri                     = aws_lambda_function.geff_lambda.invoke_arn
-
-  cache_key_parameters = null
-
-  request_parameters = {}
-  request_templates  = {}
+  cache_key_parameters    = null
+  request_parameters      = {}
+  request_templates       = {}
 }
 
 resource "aws_cloudwatch_log_group" "api_gateway" {
-  name = "api_gw_${aws_api_gateway_rest_api.ef_to_lambda.id}/${var.env}"
-
+  name              = "api_gw_${aws_api_gateway_rest_api.ef_to_lambda.id}/${var.env}"
   retention_in_days = var.log_retention_days
 }
 
@@ -321,7 +310,6 @@ resource "aws_api_gateway_deployment" "geff" {
   }
 
   rest_api_id = aws_api_gateway_rest_api.ef_to_lambda.id
-  # stage_description = "Deployed at ${timestamp()}"
 
   lifecycle {
     create_before_destroy = true
@@ -335,8 +323,7 @@ resource "aws_api_gateway_stage" "geff" {
 }
 
 resource "aws_api_gateway_method_settings" "enable_logging" {
-  depends_on = [aws_api_gateway_account.api_gateway]
-
+  depends_on  = [aws_api_gateway_account.api_gateway]
   rest_api_id = aws_api_gateway_rest_api.ef_to_lambda.id
   stage_name  = aws_api_gateway_stage.geff.stage_name
   method_path = "*/*"
