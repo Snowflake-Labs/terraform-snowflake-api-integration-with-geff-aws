@@ -36,7 +36,7 @@ resource "aws_lambda_function" "geff_lambda" {
 
   environment {
     variables = {
-      S3_BUCKET_URI = "s3://${aws_s3_bucket.geff_bucket.id}/${aws_s3_bucket_object.geff_data_folder.id}"
+      S3_BUCKET_NAME = aws_s3_bucket.geff_bucket.id
     }
   }
 }

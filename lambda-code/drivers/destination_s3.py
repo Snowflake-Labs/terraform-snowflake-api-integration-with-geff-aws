@@ -82,10 +82,15 @@ def write_to_s3(bucket: Text, filename: Text, content: AnyStr) -> Dict[Text, Any
     )
 
 
-def initialize(bucket: Text, batch_id: Text):
+def initialize(destination, batch_id: Text):
+    bucket, prefix = parse_destination_uri(destination)
     content = ''  # We use empty body for creating a folder
-    prefixed_folder = f'{DATA_FOLDER_NAME}/{batch_id}/'
-    return write_to_s3(bucket, prefixed_folder, content)
+    if not prefix:
+        prefixed_folder_path = f'{DATA_FOLDER_NAME}/{batch_id}/'
+    else:
+        prefixed_folder_path = f'{prefix}/{batch_id}/'
+
+    return write_to_s3(bucket, prefixed_folder_path, content)
 
 
 def write(
@@ -96,7 +101,10 @@ def write(
 ) -> Dict[Text, Any]:
     bucket, prefix = parse_destination_uri(destination)
     encoded_datum = json.dumps(datum)
-    prefixed_filename = f'{DATA_FOLDER_NAME}/{batch_id}/row-{row_index}.data.json'
+    if not prefix:
+        prefixed_filename = f'{DATA_FOLDER_NAME}/{batch_id}/row-{row_index}.data.json'
+    else:
+        prefixed_filename = f'{prefix}/{batch_id}/row-{row_index}.data.json'
     s3_uri = f's3://{bucket}/{prefixed_filename}'
 
     return {
@@ -110,13 +118,12 @@ def write(
 
 
 def finalize(
-    destination: Text,
+    bucket: Text,
     batch_id: Text,
     datum: Dict,
 ) -> Dict[Text, Any]:
-    bucket, prefix = parse_destination_uri(destination)
     encoded_datum = json.dumps(datum)
-    prefixed_filename = f'{prefix}/{batch_id}/{MANIFEST_FILENAME}'
+    prefixed_filename = f'{MANIESTS_FOLDER_NAME}/{batch_id}_{MANIFEST_FILENAME}'
     s3_uri = f's3://{bucket}/{prefixed_filename}'
 
     return {
@@ -129,13 +136,10 @@ def finalize(
     }
 
 
-def check_status(destination: Text, batch_id: Text) -> Optional[List[Any]]:
-    bucket, prefix = parse_destination_uri(destination)
+def check_status(bucket: Text, batch_id: Text) -> Optional[List[Any]]:
+    prefixed_filename = f'{MANIESTS_FOLDER_NAME}/{batch_id}_{MANIFEST_FILENAME}'
     try:
-        response_obj = S3_CLIENT.get_object(
-            Bucket=bucket,
-            Key=f'{prefix}/{batch_id}/{MANIFEST_FILENAME}',
-        )
+        response_obj = S3_CLIENT.get_object(Bucket=bucket, Key=prefixed_filename)
         content = response_obj['Body']
         json_object = json.loads(content.read())
     except ClientError as ce:

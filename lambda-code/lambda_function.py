@@ -6,6 +6,7 @@ from json import dumps, loads
 from typing import Any, Dict, Text
 from urllib.parse import urlparse
 
+from drivers import destination_s3
 from utils import create_response, format, invoke_process_lambda, zip
 
 # pip install --target ./site-packages -r requirements.txt
@@ -14,6 +15,7 @@ sys.path.append(os.path.join(dir_path, 'site-packages'))
 
 BATCH_ID_HEADER = 'sf-external-function-query-batch-id'
 DESTINATION_URI_HEADER = 'sf-custom-destination-uri'
+S3_BUCKET_NAME = os.environ['S3_BUCKET_NAME']
 
 
 def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
@@ -62,10 +64,9 @@ def async_flow_poll(destination: Text, batch_id: Text) -> Dict[Text, Any]:
         Dict[Text, Any]: This is the return value with the status code of 200 or 202 as per the status of the write.
     """
     print('async_flow_poll() called as destination header was not found in a GET.')
-    write_driver = import_module(f'drivers.destination_{urlparse(destination).scheme}')
 
     # Ignoring style due to dynamic import
-    status_body = write_driver.check_status(destination, batch_id)  # type: ignore
+    status_body = destination_s3.check_status(destination, batch_id)  # type: ignore
     if status_body:
         print(f'Manifest found return status code 200.')
         return {'statusCode': 200, 'body': status_body}
@@ -134,9 +135,9 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
 
     # Write data to s3 or return data synchronously
     if write_uri:
-        response = destination_driver.finalize(
-            write_uri, batch_id, res_data
-        )  # type: ignore
+        response = destination_driver.finalize(  # type: ignore
+            S3_BUCKET_NAME, batch_id, res_data
+        )
     else:
         data_dumps = dumps({'data': res_data})
         response = {'statusCode': 200, 'body': data_dumps}
@@ -174,7 +175,7 @@ def lambda_handler(event: Any, context: Any) -> Dict[Text, Any]:
     if destination:  # POST + dest header == async flow
         return async_flow_init(event, context)
     elif method == 'GET':  # First request being GET == request is a snowflake poll
-        return async_flow_poll(os.environ['S3_BUCKET_URI'], batch_id)
+        return async_flow_poll(S3_BUCKET_NAME, batch_id)
     elif method == 'POST':  # POST + no dest header == Regular request for data
         return sync_flow(event, context)
     else:
