@@ -31,12 +31,12 @@ resource "aws_lambda_function" "geff_lambda" {
 
   depends_on = [
     aws_s3_bucket.geff_bucket,
-    aws_s3_bucket_object.geff_folder
+    aws_s3_bucket_object.geff_data_folder
   ]
 
   environment {
     variables = {
-      S3_BUCKET_URI = "s3://${aws_s3_bucket.geff_bucket.id}/${aws_s3_bucket_object.geff_folder.id}"
+      S3_BUCKET_URI = "s3://${aws_s3_bucket.geff_bucket.id}/${aws_s3_bucket_object.geff_data_folder.id}"
     }
   }
 }
