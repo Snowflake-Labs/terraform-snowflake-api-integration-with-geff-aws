@@ -45,10 +45,13 @@ def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
     # Ignoring style due to dynamic import
     destination_driver.initialize(destination, batch_id)  # type: ignore
 
+    print('Invoking child lambda.')
     lambda_response = invoke_process_lambda(event, lambda_name)
     if lambda_response['StatusCode'] != 202:
+        print('Child lambda returned a non-202 status.')
         return create_response(400, 'Error invoking child lambda.')
     else:
+        print('Child lambda returned 202.')
         return {'statusCode': 202}
 
 
@@ -66,7 +69,8 @@ def async_flow_poll(destination: Text, batch_id: Text) -> Dict[Text, Any]:
     print('async_flow_poll() called as destination header was not found in a GET.')
 
     # Ignoring style due to dynamic import
-    status_body = destination_s3.check_status(destination, batch_id)  # type: ignore
+    status_body = destination_s3.check_status(
+        destination, batch_id)  # type: ignore
     if status_body:
         print(f'Manifest found return status code 200.')
         return {'statusCode': 200, 'body': status_body}
@@ -116,7 +120,7 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
                 f'drivers.process_{driver}', package=None
             ).process_row  # type: ignore
             row_result = process_row(*path, **process_row_params)
-
+            print(f'Got row_result for URL: {process_row_params.get("url")}.')
             if write_uri:
                 # Write s3 data and return confirmation
                 row_result = destination_driver.write(  # type: ignore
@@ -169,13 +173,16 @@ def lambda_handler(event: Any, context: Any) -> Dict[Text, Any]:
 
     destination = headers.get(DESTINATION_URI_HEADER)
     batch_id = headers[BATCH_ID_HEADER]
-    print(f'lambda_handler() called with destination: {destination}')
+    print(f'batch_id: {batch_id}')
 
     # The first request is always a POST unless SF is polling for status.
     if destination:  # POST + dest header == async flow
         return async_flow_init(event, context)
     elif method == 'GET':  # First request being GET == request is a snowflake poll
-        return async_flow_poll(S3_BUCKET_NAME, batch_id)
+        ret = async_flow_poll(S3_BUCKET_NAME, batch_id)
+        print('Return from async_flow_poll()')
+        print(ret)
+        return ret
     elif method == 'POST':  # POST + no dest header == Regular request for data
         return sync_flow(event, context)
     else:
