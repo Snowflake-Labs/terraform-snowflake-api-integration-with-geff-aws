@@ -1,4 +1,5 @@
 import json
+import os
 from random import sample
 from typing import Any, AnyStr, Dict, Generator, List, Optional, Text, Tuple
 from urllib.parse import urlparse
@@ -8,9 +9,13 @@ from botocore.exceptions import ClientError
 
 SAMPLE_SIZE: int = 10
 MAX_JSON_FILE_SIZE: int = 15 * 1024 * 1024 * 1024
-AWS_REGION = 'ap-south-1'  # Placeholder while in dev TODO: change as variable/header
+AWS_REGION = os.environ[
+    'AWS_REGION'
+]  # Placeholder while in dev TODO: change as variable/header
 S3_CLIENT = boto3.client('s3', region_name=AWS_REGION)
 MANIFEST_FILENAME = 'MANIFEST.json'
+DATA_FOLDER_NAME = 'data'
+MANIESTS_FOLDER_NAME = 'meta'
 
 
 def parse_destination_uri(destination: Text) -> Tuple[Text, Text]:
@@ -32,8 +37,7 @@ def parse_destination_uri(destination: Text) -> Tuple[Text, Text]:
 
 
 def estimated_record_size(records: List[Dict[Text, Any]]) -> float:
-    """
-    A helper utility to get a rough (really rough) estimate of
+    """A helper utility to get a rough (really rough) estimate of
     the size of a single record in a list of dictionary objects.
     We assume it is json serializable for writing to a file.
 
@@ -78,10 +82,9 @@ def write_to_s3(bucket: Text, filename: Text, content: AnyStr) -> Dict[Text, Any
     )
 
 
-def initialize(destination: Text, batch_id: Text):
-    bucket, prefix = parse_destination_uri(destination)
+def initialize(bucket: Text, batch_id: Text):
     content = ''  # We use empty body for creating a folder
-    prefixed_folder = f'{prefix}/{batch_id}/'
+    prefixed_folder = f'{DATA_FOLDER_NAME}/{batch_id}/'
     return write_to_s3(bucket, prefixed_folder, content)
 
 
@@ -90,10 +93,10 @@ def write(
     batch_id: Text,
     datum: Dict,
     row_index: int,
-) -> Dict[str, Any]:
+) -> Dict[Text, Any]:
     bucket, prefix = parse_destination_uri(destination)
     encoded_datum = json.dumps(datum)
-    prefixed_filename = f'{prefix}/{batch_id}/row-{row_index}.data.json'
+    prefixed_filename = f'{DATA_FOLDER_NAME}/{batch_id}/row-{row_index}.data.json'
     s3_uri = f's3://{bucket}/{prefixed_filename}'
 
     return {
@@ -110,7 +113,7 @@ def finalize(
     destination: Text,
     batch_id: Text,
     datum: Dict,
-) -> Dict[str, Any]:
+) -> Dict[Text, Any]:
     bucket, prefix = parse_destination_uri(destination)
     encoded_datum = json.dumps(datum)
     prefixed_filename = f'{prefix}/{batch_id}/{MANIFEST_FILENAME}'

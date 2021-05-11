@@ -3,9 +3,14 @@ resource "aws_s3_bucket" "geff_bucket" {
   acl    = "private"
 }
 
-resource "aws_s3_bucket_object" "geff_folder" {
+resource "aws_s3_bucket_object" "geff_data_folder" {
   bucket = aws_s3_bucket.geff_bucket.id
-  key    = "geff/"
+  key    = "data/"
+}
+
+resource "aws_s3_bucket_object" "geff_meta_folder" {
+  bucket = aws_s3_bucket.geff_bucket.id
+  key    = "meta/"
 }
 
 resource "snowflake_storage_integration" "geff_storage_integration" {

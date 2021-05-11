@@ -1,8 +1,9 @@
 from json import loads
 
 from google.oauth2 import service_account
-from googleapiclient.discovery import build
 from vault import decrypt_if_encrypted
+
+from googleapiclient.discovery import build
 
 
 def process_row(
