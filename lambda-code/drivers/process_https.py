@@ -131,6 +131,7 @@ def process_row(
                 'error': 'JSONDecodeError' if response_body else 'No Content',
                 'body': response_body.decode(),
                 'status': res.status,
+                'responded_at': response_date,
             }
 
         if req_nextpage_path and isinstance(result, list):
