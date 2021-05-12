@@ -109,14 +109,15 @@ def process_row(
             )
             response_headers = dict(res.getheaders())
             res_body = res.read()
+            print(f'Got the response body with length: {len(res_body)}')
 
-            print('Extracting body from response.')
             raw_response = (
                 decompress(res_body)
                 if res.headers.get('Content-Encoding') == 'gzip'
                 else res_body
             )
             response_body = loads(raw_response)
+            print('Extracted data from response.')
 
             response_date = (
                 parsedate_to_datetime(response_headers['Date']).isoformat()
@@ -172,4 +173,5 @@ def process_row(
             row_data = result
             next_url = None
 
+    print(f'Returning row_data with count: {len(row_data)}')
     return row_data
