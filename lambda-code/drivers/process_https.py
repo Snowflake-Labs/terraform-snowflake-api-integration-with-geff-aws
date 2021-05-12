@@ -1,5 +1,6 @@
 from base64 import b64encode
 from email.utils import parsedate_to_datetime
+from gzip import decompress
 from json import JSONDecodeError, dumps, loads
 from re import match
 from typing import Any, Dict, List, Optional, Text, Union
@@ -51,6 +52,8 @@ def process_row(
         k: v.format(**req_kwargs) for k, v in parse_header_dict(headers).items()
     }
     req_headers.setdefault('User-Agent', 'Snowflake Generic External Function 1.0')
+    req_headers.setdefault('Accept-Encoding', 'gzip')
+
     if auth is not None:
         auth = decrypt_if_encrypted(auth)
         assert auth is not None
@@ -92,16 +95,29 @@ def process_row(
     next_url: Optional[str] = req_url
     row_data: List[Any] = []
 
+    print('Starting pagination.')
     while next_url:
+        print(f'next_url is {next_url}.')
         req = Request(next_url, method=req_method, headers=req_headers, data=req_data)
         links_headers = None
+
         try:
+            print(f'Making request with {req}')
             res = urlopen(req)
             links_headers = parse_header_links(
                 ','.join(res.headers.get_all('link', []))
             )
-            response_body = res.read()
             response_headers = dict(res.getheaders())
+            res_body = res.read()
+
+            print('Extracting body from response.')
+            raw_response = (
+                decompress(res_body)
+                if res.headers.get('Content-Encoding') == 'gzip'
+                else res_body
+            )
+            response_body = loads(raw_response)
+
             response_date = (
                 parsedate_to_datetime(response_headers['Date']).isoformat()
                 if 'Date' in response_headers
@@ -109,12 +125,12 @@ def process_row(
             )
             response = (
                 {
-                    'body': loads(response_body),
+                    'body': response_body,
                     'headers': response_headers,
                     'responded_at': response_date,
                 }
                 if verbose
-                else loads(response_body)
+                else response_body
             )
             result = pick(req_results_path, response)
         except HTTPError as e:

@@ -16,7 +16,6 @@ sys.path.append(os.path.join(dir_path, 'site-packages'))
 BATCH_ID_HEADER = 'sf-external-function-query-batch-id'
 DESTINATION_URI_HEADER = 'sf-custom-destination-uri'
 S3_BUCKET_NAME = os.environ['S3_BUCKET_NAME']
-HTTP_METHOD_STRING = 'httpMethod'
 
 
 def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
@@ -74,7 +73,7 @@ def async_flow_poll(destination: Text, batch_id: Text) -> Dict[Text, Any]:
     status_body = destination_s3.check_status(destination, batch_id)  # type: ignore
     if status_body:
         print(f'Manifest found return status code 200.')
-        return {'statusCode': 200, 'body': status_body, 'isBase64Encoded': False}
+        return {'statusCode': 200, 'body': status_body}
     else:
         print(f'Manifest not found return status code 202.')
         return {'statusCode': 202}
@@ -117,9 +116,11 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
         try:
             driver, *path = event['path'].lstrip('/').split('/')
             driver = driver.replace('-', '_')
+            driver_module = f'drivers.process_{driver}'
             process_row = import_module(
-                f'drivers.process_{driver}', package=None
+                driver_module, package=None
             ).process_row  # type: ignore
+            print(f'Invoking process_row for the driver {driver_module}')
             row_result = process_row(*path, **process_row_params)
             print(f'Got row_result for URL: {process_row_params.get("url")}.')
             if write_uri:
@@ -179,7 +180,7 @@ def lambda_handler(event: Any, context: Any) -> Dict[Text, Any]:
     Returns:
         Dict[Text, Any]: Returns the response body.
     """
-    method = event.get(HTTP_METHOD_STRING)
+    method = event.get('httpMethod')
     headers = event['headers']
     print(f'lambda_handler() called with headers: {headers}')
 
@@ -188,7 +189,7 @@ def lambda_handler(event: Any, context: Any) -> Dict[Text, Any]:
 
     # httpMethod doesn't exist implies caller is base lambda.
     # This is required to break an infinite loop of child lambda creation.
-    if 'httpMethod' not in event:
+    if not method:
         return sync_flow(event, context)
 
     # httpMethod exists implies caller is API Gateway
@@ -198,8 +199,6 @@ def lambda_handler(event: Any, context: Any) -> Dict[Text, Any]:
         return sync_flow(event, context)
     elif method == 'GET':
         return async_flow_poll(S3_BUCKET_NAME, batch_id)
-    else:
-        return create_response(400, 'Function called with invalid method')
 
 
 #### TO Delete

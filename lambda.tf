@@ -22,9 +22,9 @@ resource "aws_lambda_function" "geff_lambda" {
   function_name    = "${var.prefix}_geff"
   role             = aws_iam_role.geff_lambda_role.arn
   handler          = "lambda_function.lambda_handler"
-  memory_size      = "512"
+  memory_size      = "1024"
   runtime          = "python3.8"
-  timeout          = "300"
+  timeout          = "900"
   publish          = null
   filename         = data.archive_file.lambda_code.output_path
   source_code_hash = data.archive_file.lambda_code.output_base64sha256
