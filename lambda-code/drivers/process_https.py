@@ -128,8 +128,9 @@ def process_row(
             }
         except JSONDecodeError as e:
             result = {
-                'error': 'JSONDecodeError',
-                'text': response_body.decode(),
+                'error': 'JSONDecodeError' if response_body else 'No Content',
+                'body': response_body.decode(),
+                'status': res.status,
             }
 
         if req_nextpage_path and isinstance(result, list):
