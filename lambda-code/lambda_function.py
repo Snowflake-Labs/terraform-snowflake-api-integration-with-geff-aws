@@ -16,6 +16,7 @@ sys.path.append(os.path.join(dir_path, 'site-packages'))
 BATCH_ID_HEADER = 'sf-external-function-query-batch-id'
 DESTINATION_URI_HEADER = 'sf-custom-destination-uri'
 S3_BUCKET_NAME = os.environ['S3_BUCKET_NAME']
+HTTP_METHOD_STRING = 'httpMethod'
 
 
 def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
@@ -64,16 +65,16 @@ def async_flow_poll(destination: Text, batch_id: Text) -> Dict[Text, Any]:
         batch_id (Text):
 
     Returns:
-        Dict[Text, Any]: This is the return value with the status code of 200 or 202 as per the status of the write.
+        Dict[Text, Any]: This is the return value with the status code of 200 or 202
+        as per the status of the write.
     """
     print('async_flow_poll() called as destination header was not found in a GET.')
 
     # Ignoring style due to dynamic import
-    status_body = destination_s3.check_status(
-        destination, batch_id)  # type: ignore
+    status_body = destination_s3.check_status(destination, batch_id)  # type: ignore
     if status_body:
         print(f'Manifest found return status code 200.')
-        return {'statusCode': 200, 'body': status_body}
+        return {'statusCode': 200, 'body': status_body, 'isBase64Encoded': False}
     else:
         print(f'Manifest not found return status code 202.')
         return {'statusCode': 202}
@@ -167,23 +168,57 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
 
 
 def lambda_handler(event: Any, context: Any) -> Dict[Text, Any]:
-    method = event.get('httpMethod', 'GET')
+    """
+    Implements the asynchronous function on AWS as described in the Snowflake docs here:
+    https://docs.snowflake.com/en/sql-reference/external-functions-creating-aws.html
+
+    Args:
+        event (Any): Event received from AWS
+        context (Any): Function context received from AWS
+
+    Returns:
+        Dict[Text, Any]: Returns the response body.
+    """
+    method = event.get(HTTP_METHOD_STRING)
     headers = event['headers']
     print(f'lambda_handler() called with headers: {headers}')
 
     destination = headers.get(DESTINATION_URI_HEADER)
-    batch_id = headers[BATCH_ID_HEADER]
-    print(f'batch_id: {batch_id}')
+    batch_id = headers.get(BATCH_ID_HEADER)
 
-    # The first request is always a POST unless SF is polling for status.
-    if destination:  # POST + dest header == async flow
-        return async_flow_init(event, context)
-    elif method == 'GET':  # First request being GET == request is a snowflake poll
-        ret = async_flow_poll(S3_BUCKET_NAME, batch_id)
-        print('Return from async_flow_poll()')
-        print(ret)
-        return ret
-    elif method == 'POST':  # POST + no dest header == Regular request for data
+    # httpMethod doesn't exist implies caller is base lambda.
+    # This is required to break an infinite loop of child lambda creation.
+    if 'httpMethod' not in event:
         return sync_flow(event, context)
+
+    # httpMethod exists implies caller is API Gateway
+    if method == 'POST' and destination:
+        return async_flow_init(event, context)
+    elif method == 'POST':
+        return sync_flow(event, context)
+    elif method == 'GET':
+        return async_flow_poll(S3_BUCKET_NAME, batch_id)
     else:
-        return create_response(200, "Unexpected lambda state.")
+        return create_response(400, 'Function called with invalid method')
+
+
+#### TO Delete
+# if method == 'GET':
+#     return async_flow_poll(S3_BUCKET_NAME, batch_id)
+# elif destination and not headers.get('sf-custom-sync'):
+#     return async_flow_init(event, context)
+# else:
+#     return sync_flow(event, context)
+
+# # The first request is always a POST unless SF is polling for status.
+# if destination:  # POST + dest header == async flow
+#     return async_flow_init(event, context)
+# elif method == 'GET':  # First request being GET == request is a snowflake poll
+#     ret = async_flow_poll(S3_BUCKET_NAME, batch_id)
+#     print('Return from async_flow_poll()')
+#     print(ret)
+#     return ret
+# elif method == 'POST':  # POST + no dest header == Regular request for data
+#     return sync_flow(event, context)
+# else:
+#     return create_response(200, "Unexpected lambda state.")

@@ -136,18 +136,18 @@ def finalize(
     }
 
 
-def check_status(bucket: Text, batch_id: Text) -> Optional[List[Any]]:
+def check_status(bucket: Text, batch_id: Text) -> Optional[Text]:
     prefixed_filename = f'{MANIESTS_FOLDER_NAME}/{batch_id}_{MANIFEST_FILENAME}'
     try:
         response_obj = S3_CLIENT.get_object(Bucket=bucket, Key=prefixed_filename)
         content = response_obj['Body']
-        json_object = json.loads(content.read())
+        json_object = json.loads(content.read().decode('utf-8'))
     except ClientError as ce:
         if ce.response['Error']['Code'] == 'NoSuchKey':
             print('No manifest file found returning None.')
             return None
     else:
         print(f'Manifest file found returning contents. {json_object}')
-        return json_object
+        return json.dumps({'data': json_object})
 
     return None
