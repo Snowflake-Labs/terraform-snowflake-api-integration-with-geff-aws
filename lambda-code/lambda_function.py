@@ -6,8 +6,7 @@ from json import dumps, loads
 from typing import Any, Dict, Text
 from urllib.parse import urlparse
 
-from drivers import destination_s3
-from utils import create_response, format, invoke_process_lambda, zip
+from utils import LOG, create_response, format, invoke_process_lambda, zip
 
 # pip install --target ./site-packages -r requirements.txt
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -15,7 +14,6 @@ sys.path.append(os.path.join(dir_path, 'site-packages'))
 
 BATCH_ID_HEADER = 'sf-external-function-query-batch-id'
 DESTINATION_URI_HEADER = 'sf-custom-destination-uri'
-S3_BUCKET_NAME = os.environ['S3_BUCKET_NAME']
 
 
 def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
@@ -29,7 +27,7 @@ def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
     Returns:
         Dict[Text, Any]: Represents the response state and data.
     """
-    print('Found a destination header and hence using async_flow_init()')
+    LOG.debug('Found a destination header and hence using async_flow_init().')
 
     headers = event['headers']
     batch_id = headers[BATCH_ID_HEADER]
@@ -37,7 +35,7 @@ def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
     headers.pop(DESTINATION_URI_HEADER)
     headers['write-uri'] = destination
     lambda_name = context.function_name
-    print(f'async_flow_init() received destination: {destination}')
+    LOG.debug(f'async_flow_init() received destination: {destination}.')
 
     destination_driver = import_module(
         f'drivers.destination_{urlparse(destination).scheme}'
@@ -45,13 +43,13 @@ def async_flow_init(event: Any, context: Any) -> Dict[Text, Any]:
     # Ignoring style due to dynamic import
     destination_driver.initialize(destination, batch_id)  # type: ignore
 
-    print('Invoking child lambda.')
+    LOG.debug('Invoking child lambda.')
     lambda_response = invoke_process_lambda(event, lambda_name)
     if lambda_response['StatusCode'] != 202:
-        print('Child lambda returned a non-202 status.')
+        LOG.debug('Child lambda returned a non-202 status.')
         return create_response(400, 'Error invoking child lambda.')
     else:
-        print('Child lambda returned 202.')
+        LOG.debug('Child lambda returned 202.')
         return {'statusCode': 202}
 
 
@@ -67,15 +65,18 @@ def async_flow_poll(destination: Text, batch_id: Text) -> Dict[Text, Any]:
         Dict[Text, Any]: This is the return value with the status code of 200 or 202
         as per the status of the write.
     """
-    print('async_flow_poll() called as destination header was not found in a GET.')
+    LOG.debug('async_flow_poll() called as destination header was not found in a GET.')
+    destination_driver = import_module(
+        f'drivers.destination_{urlparse(destination).scheme}'
+    )
 
     # Ignoring style due to dynamic import
-    status_body = destination_s3.check_status(destination, batch_id)  # type: ignore
+    status_body = destination_driver.check_status(destination, batch_id)  # type: ignore
     if status_body:
-        print(f'Manifest found return status code 200.')
+        LOG.debug(f'Manifest found return status code 200.')
         return {'statusCode': 200, 'body': status_body}
     else:
-        print(f'Manifest not found return status code 202.')
+        LOG.debug(f'Manifest not found return status code 202.')
         return {'statusCode': 202}
 
 
@@ -90,14 +91,14 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
     Returns:
         Dict[Text, Any]: Represents the response status and data.
     """
-    print('Destination header not found in a POST and hence using sync_flow()')
+    LOG.debug('Destination header not found in a POST and hence using sync_flow().')
     headers = event['headers']
     req_body = loads(event['body'])
 
     batch_id = headers[BATCH_ID_HEADER]
     response_encoding = headers.pop('sf-custom-response-encoding', None)
     write_uri = headers.get('write-uri')
-    print(f'sync_flow() received destination: {write_uri}')
+    LOG.debug(f'sync_flow() received destination: {write_uri}.')
 
     if write_uri:
         destination_driver = import_module(
@@ -120,9 +121,11 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
             process_row = import_module(
                 driver_module, package=None
             ).process_row  # type: ignore
-            print(f'Invoking process_row for the driver {driver_module}')
+
+            LOG.debug(f'Invoking process_row for the driver {driver_module}.')
             row_result = process_row(*path, **process_row_params)
-            print(f'Got row_result for URL: {process_row_params.get("url")}.')
+            LOG.debug(f'Got row_result for URL: {process_row_params.get("url")}.')
+
             if write_uri:
                 # Write s3 data and return confirmation
                 row_result = destination_driver.write(  # type: ignore
@@ -142,7 +145,7 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
     # Write data to s3 or return data synchronously
     if write_uri:
         response = destination_driver.finalize(  # type: ignore
-            S3_BUCKET_NAME, batch_id, res_data
+            write_uri, batch_id, res_data
         )
     else:
         data_dumps = dumps({'data': res_data})
@@ -182,7 +185,7 @@ def lambda_handler(event: Any, context: Any) -> Dict[Text, Any]:
     """
     method = event.get('httpMethod')
     headers = event['headers']
-    print(f'lambda_handler() called with headers: {headers}')
+    LOG.debug(f'lambda_handler() called.')
 
     destination = headers.get(DESTINATION_URI_HEADER)
     batch_id = headers.get(BATCH_ID_HEADER)
@@ -198,26 +201,6 @@ def lambda_handler(event: Any, context: Any) -> Dict[Text, Any]:
     elif method == 'POST':
         return sync_flow(event, context)
     elif method == 'GET':
-        return async_flow_poll(S3_BUCKET_NAME, batch_id)
+        return async_flow_poll(destination, batch_id)
 
-
-#### TO Delete
-# if method == 'GET':
-#     return async_flow_poll(S3_BUCKET_NAME, batch_id)
-# elif destination and not headers.get('sf-custom-sync'):
-#     return async_flow_init(event, context)
-# else:
-#     return sync_flow(event, context)
-
-# # The first request is always a POST unless SF is polling for status.
-# if destination:  # POST + dest header == async flow
-#     return async_flow_init(event, context)
-# elif method == 'GET':  # First request being GET == request is a snowflake poll
-#     ret = async_flow_poll(S3_BUCKET_NAME, batch_id)
-#     print('Return from async_flow_poll()')
-#     print(ret)
-#     return ret
-# elif method == 'POST':  # POST + no dest header == Regular request for data
-#     return sync_flow(event, context)
-# else:
-#     return create_response(200, "Unexpected lambda state.")
+    return create_response(400, 'Unexpected Request.')

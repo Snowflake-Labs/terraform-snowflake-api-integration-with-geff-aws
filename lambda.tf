@@ -1,12 +1,3 @@
-resource "aws_cloudwatch_log_group" "geff" {
-  name              = "/aws/lambda/${var.prefix}-geff"
-  retention_in_days = var.log_retention_days
-  tags = {
-    Name        = "${var.prefix}-geff"
-    Environment = var.env
-  }
-}
-
 data "archive_file" "lambda_code" {
   type        = "zip"
   source_dir  = "${path.module}/lambda-code"
@@ -22,7 +13,7 @@ resource "aws_lambda_function" "geff_lambda" {
   function_name    = "${var.prefix}_geff"
   role             = aws_iam_role.geff_lambda_role.arn
   handler          = "lambda_function.lambda_handler"
-  memory_size      = "1024"
+  memory_size      = "4096"
   runtime          = "python3.8"
   timeout          = "900"
   publish          = null
@@ -31,14 +22,9 @@ resource "aws_lambda_function" "geff_lambda" {
 
   depends_on = [
     aws_s3_bucket.geff_bucket,
-    aws_s3_bucket_object.geff_data_folder
+    aws_s3_bucket_object.geff_data_folder,
+    aws_iam_role_policy_attachment.geff_write_logs
   ]
-
-  environment {
-    variables = {
-      S3_BUCKET_NAME = aws_s3_bucket.geff_bucket.id
-    }
-  }
 }
 
 resource "aws_iam_role" "geff_lambda_role" {

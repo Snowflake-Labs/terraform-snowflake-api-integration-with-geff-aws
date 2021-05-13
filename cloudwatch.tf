@@ -12,7 +12,6 @@ resource "aws_iam_policy" "cloudwatch_write" {
           Action = [
             "logs:PutLogEvents",
             "logs:CreateLogStream",
-            "logs:CreateLogGroup"
           ],
           Resource = "arn:aws:logs:*:*:*"
         },

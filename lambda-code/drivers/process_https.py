@@ -8,7 +8,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import parse_qsl
 from urllib.request import Request, urlopen
 
-from utils import parse_header_links, pick
+from utils import LOG, parse_header_links, pick
 from vault import decrypt_if_encrypted
 
 
@@ -95,21 +95,21 @@ def process_row(
     next_url: Optional[str] = req_url
     row_data: List[Any] = []
 
-    print('Starting pagination.')
+    LOG.debug('Starting pagination.')
     while next_url:
-        print(f'next_url is {next_url}.')
+        LOG.debug(f'next_url is {next_url}.')
         req = Request(next_url, method=req_method, headers=req_headers, data=req_data)
         links_headers = None
 
         try:
-            print(f'Making request with {req}')
+            LOG.debug(f'Making request with {req}')
             res = urlopen(req)
             links_headers = parse_header_links(
                 ','.join(res.headers.get_all('link', []))
             )
             response_headers = dict(res.getheaders())
             res_body = res.read()
-            print(f'Got the response body with length: {len(res_body)}')
+            LOG.debug(f'Got the response body with length: {len(res_body)}')
 
             raw_response = (
                 decompress(res_body)
@@ -117,7 +117,7 @@ def process_row(
                 else res_body
             )
             response_body = loads(raw_response)
-            print('Extracted data from response.')
+            LOG.debug('Extracted data from response.')
 
             response_date = (
                 parsedate_to_datetime(response_headers['Date']).isoformat()
@@ -173,5 +173,5 @@ def process_row(
             row_data = result
             next_url = None
 
-    print(f'Returning row_data with count: {len(row_data)}')
+    LOG.debug(f'Returning row_data with count: {len(row_data)}')
     return row_data

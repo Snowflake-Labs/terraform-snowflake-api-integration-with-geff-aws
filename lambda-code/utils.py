@@ -1,11 +1,17 @@
 import json
+import logging
 import os
 import re
+import sys
 from codecs import encode
 from json import dumps
 from typing import Any, Dict, Optional, Text
 
 import boto3
+
+logging.basicConfig(stream=sys.stdout)
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.DEBUG)
 
 
 def pick(path: str, d: dict):
@@ -54,7 +60,13 @@ def parse_header_links(value):
 
 
 def zip(s, chunk_size=1_000_000):
-    '''zip in pieces, as it is tough to inflate large chunks in Snowflake per UDF mem limits'''
+    """zip in pieces, as it is tough to inflate large chunks in
+    Snowflake per UDF mem limits
+
+    Args:
+        s ([type]): [description]
+        chunk_size ([type], optional): [description]. Defaults to 1_000_000.
+    """
 
     def do_zip(s):
         return encode(encode(s.encode(), encoding='zlib'), 'base64').decode()
@@ -89,11 +101,19 @@ def create_response(code: int, msg: Text) -> Dict[Text, Any]:
 
 
 def invoke_process_lambda(event: Any, lambda_name: Text) -> Dict[Text, Any]:
+    """Helper method to invoke a child lambda.
+
+    Args:
+        event (Any): The event as received by the base lambda
+        lambda_name (Text): The lambda function name
+
+    Returns:
+        Dict[Text, Any]: This is a 202 status with empty body in our usage.
+    """
     # Create payload to be sent to lambda
     invoke_payload = json.dumps(event)
 
-    # Invoke processing lambda asynchronously, this allows
-    # processing to continue while polls are handled with a 202 status.
+    # We call a child lambda to do the sync_flow and return a 202 to prevent timeout.
     lambda_client = boto3.client(
         'lambda',
         region_name=os.environ['AWS_REGION'],
