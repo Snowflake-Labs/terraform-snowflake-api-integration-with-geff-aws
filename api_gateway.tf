@@ -89,7 +89,8 @@ resource "aws_api_gateway_deployment" "geff_api_gw_deployment" {
   }
 
   depends_on = [
-    aws_api_gateway_integration.https_to_lambda
+    aws_api_gateway_integration.https_to_lambda,
+    aws_api_gateway_rest_api_policy.ef_to_lambda
   ]
 }
 
