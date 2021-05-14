@@ -1,82 +1,5 @@
-/*
-  logging API Gateway logging is set up per-region
-*/
-resource "aws_iam_role" "gateway_logger" {
-  name = "${var.prefix}-api-gateway-logger"
-  path = "/"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "apigateway.amazonaws.com"
-        }
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "gateway_logger" {
-  role       = aws_iam_role.gateway_logger.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
-}
-
-resource "aws_api_gateway_account" "api_gateway" {
-  cloudwatch_role_arn = aws_iam_role.gateway_logger.arn
-}
-
-/*
-  rest is API Gateway specific to External Functions
-*/
-resource "aws_iam_role" "gateway_caller" {
-  name = "${var.prefix}-api-gateway-caller"
-  path = "/"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Condition = {
-          StringEquals = {
-            "sts:ExternalId" = snowflake_api_integration.api_integration.api_aws_external_id
-          }
-        }
-        Effect = "Allow"
-        Principal = {
-          AWS = snowflake_api_integration.api_integration.api_aws_iam_user_arn
-        }
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy" "gateway_caller" {
-  name = "${var.prefix}-api-gateway-caller"
-  role = aws_iam_role.gateway_caller.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect   = "Allow"
-        Action   = "execute-api:Invoke"
-        Resource = "${aws_api_gateway_rest_api.ef_to_lambda.execution_arn}/*/*/*"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "gateway_caller" {
-  role       = aws_iam_role.gateway_caller.id
-  policy_arn = "arn:aws:iam::aws:policy/AmazonAPIGatewayInvokeFullAccess"
-}
-
 resource "aws_api_gateway_rest_api" "ef_to_lambda" {
-  name = "${var.prefix}-seceng-external-functions"
+  name = "${var.prefix}_seceng_geff"
 
   endpoint_configuration {
     types = [
@@ -85,27 +8,31 @@ resource "aws_api_gateway_rest_api" "ef_to_lambda" {
   }
 }
 
+resource "time_sleep" "wait_20_seconds" {
+  depends_on      = [aws_iam_role.gateway_caller]
+  create_duration = "20s"
+}
+
 resource "aws_api_gateway_rest_api_policy" "ef_to_lambda" {
   rest_api_id = aws_api_gateway_rest_api.ef_to_lambda.id
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
         Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:sts::${local.account_id}:assumed-role/${var.prefix}-api-gateway-caller/snowflake"
+          AWS = "arn:aws:sts::${local.account_id}:assumed-role/${var.prefix}_api_gateway_caller/snowflake"
         }
         Action   = "execute-api:Invoke"
         Resource = "${aws_api_gateway_rest_api.ef_to_lambda.execution_arn}/*/*/*"
-      },
+      }
     ]
   })
 
   depends_on = [
-    aws_api_gateway_rest_api.ef_to_lambda,
-    aws_api_gateway_method_settings.enable_logging,
-    aws_iam_role_policy_attachment.gateway_caller,
-    aws_iam_role_policy.gateway_caller,
+    time_sleep.wait_20_seconds,
+    aws_api_gateway_rest_api.ef_to_lambda
   ]
 }
 
@@ -143,27 +70,27 @@ resource "aws_api_gateway_integration" "https_to_lambda" {
   http_method             = aws_api_gateway_method.https_any_method.http_method
   integration_http_method = "POST" # Lambda integration only uses POST
   type                    = "AWS_PROXY"
-  
-  uri                     = aws_lambda_function.geff_lambda.invoke_arn
-  cache_key_parameters    = null
-  request_parameters      = {}
-  request_templates       = {}
+
+  uri                  = aws_lambda_function.geff_lambda.invoke_arn
+  cache_key_parameters = null
+  request_parameters   = {}
+  request_templates    = {}
 }
 
 resource "aws_api_gateway_deployment" "geff_api_gw_deployment" {
-  depends_on = [
-    aws_api_gateway_integration.https_to_lambda
-  ]
+  rest_api_id = aws_api_gateway_rest_api.ef_to_lambda.id
 
   triggers = {
     redeployment = sha1(jsonencode(aws_api_gateway_rest_api.ef_to_lambda))
   }
 
-  rest_api_id = aws_api_gateway_rest_api.ef_to_lambda.id
-
   lifecycle {
     create_before_destroy = true
   }
+
+  depends_on = [
+    aws_api_gateway_integration.https_to_lambda
+  ]
 }
 
 resource "aws_api_gateway_stage" "geff_api_gw_stage" {
@@ -173,7 +100,6 @@ resource "aws_api_gateway_stage" "geff_api_gw_stage" {
 }
 
 resource "aws_api_gateway_method_settings" "enable_logging" {
-  depends_on  = [aws_api_gateway_account.api_gateway]
   rest_api_id = aws_api_gateway_rest_api.ef_to_lambda.id
   stage_name  = aws_api_gateway_stage.geff_api_gw_stage.stage_name
   method_path = "*/*"
@@ -184,4 +110,6 @@ resource "aws_api_gateway_method_settings" "enable_logging" {
     throttling_burst_limit = 5000
     throttling_rate_limit  = 10000
   }
+
+  depends_on = [aws_api_gateway_account.api_gateway]
 }

@@ -17,3 +17,8 @@ output "bucket_url" {
   description = "GEFF S3 Bucket URL"
   value       = module.snowflake_api_integration_aws_gateway.bucket_url
 }
+
+output "allowed_prefixes" {
+  description = "This is the inferred API Gateway invoke URL which we use as allowed prefixes."
+  value       = module.snowflake_api_integration_aws_gateway.allowed_prefixes
+}

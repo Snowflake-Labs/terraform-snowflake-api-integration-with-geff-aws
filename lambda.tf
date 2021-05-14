@@ -23,12 +23,13 @@ resource "aws_lambda_function" "geff_lambda" {
   depends_on = [
     aws_s3_bucket.geff_bucket,
     aws_s3_bucket_object.geff_data_folder,
+    aws_s3_bucket_object.geff_meta_folder,
     aws_iam_role_policy_attachment.geff_write_logs
   ]
 }
 
 resource "aws_iam_role" "geff_lambda_role" {
-  name = "${var.prefix}_geff"
+  name = "${var.prefix}_geff_lambda"
   path = "/service-role/"
 
   assume_role_policy = jsonencode({
@@ -58,7 +59,7 @@ resource "aws_iam_role_policy_attachment" "geff_decrypt_secrets" {
 resource "aws_iam_policy" "geff_lambda_policy" {
   # 1. read and write to S3 bucket
   # 2. Allow lambda to invoke lambda
-  name = "${var.prefix}-geff-lambda-policy"
+  name = "${var.prefix}_geff_lambda"
 
   policy = jsonencode({
     "Version" : "2012-10-17",

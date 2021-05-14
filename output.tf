@@ -17,3 +17,8 @@ output "bucket_url" {
   description = "GEFF S3 Bucket URL"
   value       = "s3://${aws_s3_bucket.geff_bucket.id}/${aws_s3_bucket_object.geff_data_folder.id}"
 }
+
+output "allowed_prefixes" {
+  description = "This is the inferred API Gateway invoke URL which we use as allowed prefixes."
+  value       = local.inferred_api_gw_invoke_url
+}
