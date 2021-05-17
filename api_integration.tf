@@ -4,8 +4,4 @@ resource "snowflake_api_integration" "geff_api_integration" {
   api_provider         = "aws_api_gateway"
   api_allowed_prefixes = [local.inferred_api_gw_invoke_url]
   api_aws_role_arn     = "arn:aws:iam::${local.account_id}:role/${var.prefix}_api_gateway_caller"
-
-  depends_on = [
-    aws_api_gateway_rest_api.ef_to_lambda
-  ]
 }

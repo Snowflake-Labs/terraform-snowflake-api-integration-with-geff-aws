@@ -5,7 +5,10 @@ variable "aws_region" {
 
 variable "prefix" {
   type        = string
-  description = "this will be the prefix used to name the Resources"
+  description = <<EOT
+    This will be the prefix used to name the Resources.
+    WARNING: Enter a short prefix in order to prevent name length related restrictions
+  EOT
   default     = "example"
 }
 
@@ -49,7 +52,6 @@ variable "snowflake_password" {
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 data "aws_partition" "current" {}
-
 
 locals {
   account_id = data.aws_caller_identity.current.account_id

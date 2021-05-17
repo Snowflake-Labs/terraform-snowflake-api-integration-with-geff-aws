@@ -37,7 +37,7 @@ resource "aws_api_gateway_account" "api_gateway" {
 # 2. Role, Role Policy and Policy attachment for the role that the external function will assume.
 # -----------------------------------------------------------------------------------------------
 resource "aws_iam_role" "gateway_caller" {
-  name = "${var.prefix}_api_gateway_caller"
+  name = "${local.geff_prefix}_api_gateway_caller"
   path = "/"
 
   assume_role_policy = jsonencode({
@@ -64,7 +64,7 @@ resource "aws_iam_role" "gateway_caller" {
 }
 
 resource "aws_iam_role_policy" "gateway_caller" {
-  name = "${var.prefix}_api_gateway_caller"
+  name = "${local.geff_prefix}_api_gateway_caller"
   role = aws_iam_role.gateway_caller.id
 
   policy = jsonencode({
@@ -81,11 +81,6 @@ resource "aws_iam_role_policy" "gateway_caller" {
   depends_on = [
     aws_api_gateway_rest_api.ef_to_lambda
   ]
-}
-
-resource "aws_iam_role_policy_attachment" "gateway_caller" {
-  role       = aws_iam_role.gateway_caller.id
-  policy_arn = "arn:aws:iam::aws:policy/AmazonAPIGatewayInvokeFullAccess"
 }
 
 # ---------------------------------------------
