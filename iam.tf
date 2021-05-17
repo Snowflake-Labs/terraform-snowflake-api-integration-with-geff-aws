@@ -63,8 +63,8 @@ resource "aws_iam_role" "gateway_caller" {
   ]
 }
 
-resource "aws_iam_role_policy" "gateway_caller" {
-  name = local.api_gw_caller_role_name
+resource "aws_iam_role_policy" "gateway_caller_policy" {
+  name = "${local.api_gw_caller_role_name}_policy"
   role = aws_iam_role.gateway_caller.id
 
   policy = jsonencode({
