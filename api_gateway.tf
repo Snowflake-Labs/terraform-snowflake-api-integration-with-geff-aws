@@ -1,5 +1,5 @@
 resource "aws_api_gateway_rest_api" "ef_to_lambda" {
-  name = "${local.geff_prefix}_geff"
+  name = "${local.geff_prefix}_api_gateway"
 
   endpoint_configuration {
     types = [
@@ -22,7 +22,7 @@ resource "aws_api_gateway_rest_api_policy" "ef_to_lambda" {
       {
         Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:sts::${local.account_id}:assumed-role/${var.prefix}_api_gateway_caller/snowflake"
+          AWS = "arn:aws:sts::${local.account_id}:assumed-role/${local.api_gw_caller_role_name}/snowflake"
         }
         Action   = "execute-api:Invoke"
         Resource = "${aws_api_gateway_rest_api.ef_to_lambda.execution_arn}/*/*/*"

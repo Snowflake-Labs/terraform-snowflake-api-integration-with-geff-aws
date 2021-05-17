@@ -20,7 +20,7 @@ data "aws_iam_policy_document" "geff_api_gateway_assume_role_policy_doc" {
 }
 
 resource "aws_iam_role" "geff_api_gateway_assume_role" {
-  name               = "${local.geff_prefix}_api_gateway_logger"
+  name               = local.api_gw_logger_role_name
   assume_role_policy = data.aws_iam_policy_document.geff_api_gateway_assume_role_policy_doc.json
 }
 
@@ -37,7 +37,7 @@ resource "aws_api_gateway_account" "api_gateway" {
 # 2. Role, Role Policy and Policy attachment for the role that the external function will assume.
 # -----------------------------------------------------------------------------------------------
 resource "aws_iam_role" "gateway_caller" {
-  name = "${local.geff_prefix}_api_gateway_caller"
+  name = local.api_gw_caller_role_name
   path = "/"
 
   assume_role_policy = jsonencode({
@@ -64,7 +64,7 @@ resource "aws_iam_role" "gateway_caller" {
 }
 
 resource "aws_iam_role_policy" "gateway_caller" {
-  name = "${local.geff_prefix}_api_gateway_caller"
+  name = local.api_gw_caller_role_name
   role = aws_iam_role.gateway_caller.id
 
   policy = jsonencode({
@@ -87,7 +87,7 @@ resource "aws_iam_role_policy" "gateway_caller" {
 # 3. Role, Role Policy for Storage Integration.
 # ---------------------------------------------
 resource "aws_iam_role" "s3_caller" {
-  name = "${var.prefix}_s3_caller"
+  name = local.s3_caller_role_name
   path = "/"
 
   assume_role_policy = jsonencode({
@@ -115,7 +115,7 @@ resource "aws_iam_role" "s3_caller" {
 }
 
 resource "aws_iam_role_policy" "s3_caller" {
-  name = "${var.prefix}_s3_caller_policy"
+  name = "${local.s3_caller_role_name}_policy"
   role = aws_iam_role.s3_caller.id
 
   policy = jsonencode({

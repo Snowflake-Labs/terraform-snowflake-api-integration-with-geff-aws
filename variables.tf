@@ -64,5 +64,8 @@ locals {
 }
 
 locals {
-  lambda_function_name = "${local.geff_prefix}_lambda"
+  lambda_function_name    = "${local.geff_prefix}_lambda"
+  api_gw_caller_role_name = "${local.geff_prefix}_api_gateway_caller"
+  api_gw_logger_role_name = "${local.geff_prefix}_api_gateway_logger"
+  s3_caller_role_name     = "${local.geff_prefix}_s3_caller"
 }
