@@ -98,6 +98,8 @@ resource "aws_api_gateway_stage" "geff_api_gw_stage" {
   deployment_id = aws_api_gateway_deployment.geff_api_gw_deployment.id
   rest_api_id   = aws_api_gateway_rest_api.ef_to_lambda.id
   stage_name    = var.env
+
+  depends_on = [aws_cloudwatch_log_group.geff_api_gateway_log_group]
 }
 
 resource "aws_api_gateway_method_settings" "enable_logging" {

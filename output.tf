@@ -1,6 +1,6 @@
 output "api_integration_name" {
   description = "Name of API integration"
-  value       = "${var.prefix}_api_integration"
+  value       = snowflake_api_integration.geff_api_integration.name
 }
 
 output "api_gateway_invoke_url" {
@@ -10,7 +10,7 @@ output "api_gateway_invoke_url" {
 
 output "storage_integration_name" {
   description = "Name of Storage integration"
-  value       = "${var.prefix}-geff-storage-integration"
+  value       = snowflake_storage_integration.geff_storage_integration.name
 }
 
 output "bucket_url" {

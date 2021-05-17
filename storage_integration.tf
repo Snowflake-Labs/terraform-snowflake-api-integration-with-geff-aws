@@ -14,7 +14,7 @@ resource "aws_s3_bucket_object" "geff_meta_folder" {
 }
 
 resource "snowflake_storage_integration" "geff_storage_integration" {
-  name                      = "${var.prefix}_geff_storage_integration"
+  name                      = "${local.geff_prefix}_storage_integration"
   type                      = "EXTERNAL_STAGE"
   enabled                   = true
   storage_allowed_locations = ["s3://${aws_s3_bucket.geff_bucket.id}/"]

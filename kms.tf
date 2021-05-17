@@ -20,23 +20,3 @@ resource "aws_kms_key" "prod" {
   )
   tags = {}
 }
-
-resource "aws_iam_policy" "kms_decrypt" {
-  name        = "${var.prefix}_kms_decrypt"
-  path        = "/"
-  description = ""
-
-  policy = jsonencode(
-    {
-      Version = "2012-10-17"
-      Statement = [
-        {
-          Action   = "kms:Decrypt"
-          Effect   = "Allow"
-          Resource = aws_kms_key.prod.arn
-          Sid      = ""
-        },
-      ]
-    }
-  )
-}
