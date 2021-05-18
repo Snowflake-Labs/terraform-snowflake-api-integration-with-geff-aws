@@ -23,7 +23,7 @@ output "bucket_url" {
   value       = module.snowflake_api_integration_aws_gateway.bucket_url
 }
 
-output "sns_arn"{
-  description = "The ARN of the SNS topic"
-  value = module.snowflake_api_integration_aws_gateway.sns_arn
+output "s3_sns_topic_arn" {
+  description = "GEFF S3 SNS Topic to use while creating the Snowflake PIPE."
+  value       = module.snowflake_api_integration_aws_gateway.s3_sns_topic_arn
 }
