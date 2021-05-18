@@ -57,14 +57,10 @@ resource "aws_iam_role" "gateway_caller" {
       }
     ]
   })
-
-  depends_on = [
-    snowflake_api_integration.geff_api_integration
-  ]
 }
 
 resource "aws_iam_role_policy" "gateway_caller_policy" {
-  name = "${local.api_gw_caller_role_name}_policy"
+  name = "${var.prefix}_invoke_api_gateway_policy"
   role = aws_iam_role.gateway_caller.id
 
   policy = jsonencode({
@@ -77,10 +73,6 @@ resource "aws_iam_role_policy" "gateway_caller_policy" {
       }
     ]
   })
-
-  depends_on = [
-    aws_api_gateway_rest_api.ef_to_lambda
-  ]
 }
 
 # ---------------------------------------------
@@ -108,14 +100,10 @@ resource "aws_iam_role" "s3_caller" {
       }
     ]
   })
-
-  depends_on = [
-    snowflake_storage_integration.geff_storage_integration
-  ]
 }
 
 resource "aws_iam_role_policy" "s3_caller" {
-  name = "${local.s3_caller_role_name}_policy"
+  name = "${var.prefix}_rw_to_s3_bucket_policy"
   role = aws_iam_role.s3_caller.id
 
   policy = jsonencode({
@@ -146,10 +134,6 @@ resource "aws_iam_role_policy" "s3_caller" {
       }
     ]
   })
-
-  depends_on = [
-    aws_s3_bucket.geff_bucket
-  ]
 }
 
 # -----------------------------------------------------------------------

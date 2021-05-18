@@ -25,7 +25,6 @@ resource "aws_lambda_function" "geff_lambda" {
     aws_s3_bucket_object.geff_data_folder,
     aws_s3_bucket_object.geff_meta_folder,
     aws_cloudwatch_log_group.geff_lambda_log_group,
-    aws_iam_role.geff_lambda_assume_role
   ]
 }
 
@@ -34,6 +33,4 @@ resource "aws_lambda_permission" "api_gateway" {
   principal     = "apigateway.amazonaws.com"
   action        = "lambda:InvokeFunction"
   source_arn    = "${aws_api_gateway_rest_api.ef_to_lambda.execution_arn}/*/*"
-
-  depends_on = [aws_lambda_function.geff_lambda]
 }
