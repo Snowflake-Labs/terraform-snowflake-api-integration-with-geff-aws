@@ -22,3 +22,8 @@ output "bucket_url" {
   description = "GEFF S3 Bucket URL"
   value       = module.snowflake_api_integration_aws_gateway.bucket_url
 }
+
+output "sns_arn"{
+  description = "The ARN of the SNS topic"
+  value = module.snowflake_api_integration_aws_gateway.sns_arn
+}
