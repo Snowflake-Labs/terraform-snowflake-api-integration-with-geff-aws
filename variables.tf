@@ -68,4 +68,6 @@ locals {
   api_gw_caller_role_name = "${local.geff_prefix}_api_gateway_caller"
   api_gw_logger_role_name = "${local.geff_prefix}_api_gateway_logger"
   s3_caller_role_name     = "${local.geff_prefix}_s3_caller"
+  s3_sns_policy_name      = "${local.geff_prefix}_s3_sns_topic_policy"
+  s3_sns_topic_name       = "${local.geff_prefix}_bucket_sns"
 }

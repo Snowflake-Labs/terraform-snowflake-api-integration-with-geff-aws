@@ -30,10 +30,7 @@ resource "aws_api_gateway_rest_api_policy" "ef_to_lambda" {
     ]
   })
 
-  depends_on = [
-    time_sleep.wait_20_seconds,
-    # aws_api_gateway_rest_api.ef_to_lambda
-  ]
+  depends_on = [time_sleep.wait_20_seconds]
 }
 
 resource "aws_api_gateway_resource" "https" {
@@ -88,12 +85,8 @@ resource "aws_api_gateway_deployment" "geff_api_gw_deployment" {
     create_before_destroy = true
   }
 
-  # We ensure that the deployment of the gateway happens only after:
-  # 1. The rest api policy is applied and hence won't require a redeployment
-  # 2. The API integration has been 
   depends_on = [
     aws_api_gateway_integration.https_to_lambda,
-    # aws_api_gateway_rest_api_policy.ef_to_lambda
   ]
 }
 
