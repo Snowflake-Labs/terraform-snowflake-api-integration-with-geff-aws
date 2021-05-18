@@ -22,3 +22,8 @@ output "bucket_url" {
   description = "GEFF S3 Bucket URL"
   value       = module.snowflake_api_integration_aws_gateway.bucket_url
 }
+
+output "s3_sns_topic_arn" {
+  description = "GEFF S3 SNS Topic to use while creating the Snowflake PIPE."
+  value       = module.snowflake_api_integration_aws_gateway.s3_sns_topic_arn
+}
