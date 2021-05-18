@@ -22,3 +22,8 @@ output "bucket_url" {
   description = "GEFF S3 Bucket URL"
   value       = "s3://${aws_s3_bucket.geff_bucket.id}/${aws_s3_bucket_object.geff_data_folder.id}"
 }
+
+output "sns_arn"{
+  description = "The ARN of the SNS topic"
+  value = aws_sns_topic.user_updates.arn
+}
