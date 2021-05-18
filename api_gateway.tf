@@ -30,13 +30,7 @@ resource "aws_api_gateway_rest_api_policy" "ef_to_lambda" {
     ]
   })
 
-<<<<<<< HEAD
-  depends_on = [
-    time_sleep.wait_20_seconds
-  ]
-=======
   depends_on = [time_sleep.wait_20_seconds]
->>>>>>> add_s3_sns
 }
 
 resource "aws_api_gateway_resource" "https" {
@@ -91,15 +85,9 @@ resource "aws_api_gateway_deployment" "geff_api_gw_deployment" {
     create_before_destroy = true
   }
 
-<<<<<<< HEAD
   # We ensure that the deployment of the gateway happens only after:
   # The API integration has been created.
   depends_on = [aws_api_gateway_integration.https_to_lambda]
-=======
-  depends_on = [
-    aws_api_gateway_integration.https_to_lambda,
-  ]
->>>>>>> add_s3_sns
 }
 
 resource "aws_api_gateway_stage" "geff_api_gw_stage" {
