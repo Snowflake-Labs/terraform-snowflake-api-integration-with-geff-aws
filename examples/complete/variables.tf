@@ -41,7 +41,6 @@ variable "snowflake_password" {
   sensitive = true
 }
 
-
 data "aws_caller_identity" "current" {}
 
 locals {

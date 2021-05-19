@@ -181,7 +181,7 @@ def test_okta():
                 'body': '{"data": [[0, "/api/v1/users", ""]]}',
             }
         )
-        print(result['body'])
+        LOG.debug(result['body'])
         assert len(loads(result['body'])['data'][0][1]) > 200
 
 

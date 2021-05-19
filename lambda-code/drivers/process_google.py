@@ -2,7 +2,6 @@ from json import loads
 
 from google.oauth2 import service_account, credentials
 from googleapiclient.discovery import build
-
 from vault import decrypt_if_encrypted
 
 

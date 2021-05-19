@@ -1,12 +1,14 @@
 from base64 import b64encode
 from email.utils import parsedate_to_datetime
-from json import dumps, loads, JSONDecodeError
+from gzip import decompress
+from json import JSONDecodeError, dumps, loads
 from re import match
-from urllib.request import urlopen, Request
+from typing import Any, Dict, List, Optional, Text, Union
 from urllib.error import HTTPError, URLError
 from urllib.parse import parse_qsl
+from urllib.request import Request, urlopen
 
-from utils import parse_header_links, pick
+from utils import LOG, parse_header_links, pick
 from vault import decrypt_if_encrypted
 
 
@@ -19,18 +21,19 @@ def parse_header_dict(value):
 
 
 def process_row(
-    data='',
-    base_url='',
-    url='',
-    json=None,
-    method='get',
-    headers='',
-    kwargs='',
-    auth=None,
-    params='',
-    verbose=False,
-    nextpage_path='',
-    results_path='',
+    data: Optional[Text] = None,
+    base_url: Text = '',
+    url: Text = '',
+    json: Optional[Text] = None,
+    method: Text = 'get',
+    headers: Text = '',
+    kwargs: Union[Dict, Text] = '',
+    auth: Text = None,
+    params: Text = '',
+    verbose: bool = False,
+    cursor: Text = '',
+    results_path: Text = '',
+    destination_uri: Text = '',
 ):
     if url:
         req_url = base_url + url
@@ -48,9 +51,12 @@ def process_row(
     req_headers = {
         k: v.format(**req_kwargs) for k, v in parse_header_dict(headers).items()
     }
-    req_headers.setdefault('User-Agent', 'GEFF 1.0')
-    if auth:
+    req_headers.setdefault('User-Agent', 'Snowflake Generic External Function 1.0')
+    req_headers.setdefault('Accept-Encoding', 'gzip')
+
+    if auth is not None:
         auth = decrypt_if_encrypted(auth)
+        assert auth is not None
         req_auth = (
             loads(auth)
             if auth.startswith('{')
@@ -72,34 +78,47 @@ def process_row(
             req_headers['authorization'] = req_auth['authorization']
 
     # query, nextpage_path, results_path
-    req_qs = params
-    req_nextpage_path = nextpage_path
-    req_results_path = results_path
+    req_params: str = params
+    req_results_path: str = results_path
+    req_cursor: str = cursor
+    req_method: str = method.upper()
 
-    req_method = method.upper()
     if json:
-        req_data = (
+        req_data: Optional[bytes] = (
             json if json.startswith('{') else dumps(parse_header_dict(json))
         ).encode()
         req_headers['Content-Type'] = 'application/json'
     else:
-        req_data = data.encode()
+        req_data = None if data is None else data.encode()
 
-    req_url = f'https://{req_host}{req_path}'
-    next_url = req_url
-    next_url += ('?' + req_qs) if req_qs else ''
-    row_data = []
+    req_url += f'?{req_params}'
+    next_url: Optional[str] = req_url
+    row_data: List[Any] = []
 
+    LOG.debug('Starting pagination.')
     while next_url:
+        LOG.debug(f'next_url is {next_url}.')
         req = Request(next_url, method=req_method, headers=req_headers, data=req_data)
         links_headers = None
+
         try:
+            LOG.debug(f'Making request with {req}')
             res = urlopen(req)
             links_headers = parse_header_links(
                 ','.join(res.headers.get_all('link', []))
             )
-            response_body = res.read()
             response_headers = dict(res.getheaders())
+            res_body = res.read()
+            LOG.debug(f'Got the response body with length: {len(res_body)}')
+
+            raw_response = (
+                decompress(res_body)
+                if res.headers.get('Content-Encoding') == 'gzip'
+                else res_body
+            )
+            response_body = loads(raw_response)
+            LOG.debug('Extracted data from response.')
+
             response_date = (
                 parsedate_to_datetime(response_headers['Date']).isoformat()
                 if 'Date' in response_headers
@@ -107,17 +126,17 @@ def process_row(
             )
             response = (
                 {
-                    'body': loads(response_body),
+                    'body': response_body,
                     'headers': response_headers,
                     'responded_at': response_date,
                 }
                 if verbose
-                else loads(response_body)
+                else response_body
             )
             result = pick(req_results_path, response)
         except HTTPError as e:
             result = {
-                'error': f'{e.status} {e.reason}',
+                'error': f'{e.code} {e.reason}',
                 'url': next_url,
             }
         except URLError as e:
@@ -134,16 +153,27 @@ def process_row(
                 'responded_at': response_date,
             }
 
-        if req_nextpage_path and isinstance(result, list):
+        if req_cursor and isinstance(result, list):
             row_data += result
-            nextpage = pick(req_nextpage_path, response)
-            next_url = f'https://{req_host}{nextpage}' if nextpage else None
+            if ':' in req_cursor:
+                cursor_path, cursor_param = req_cursor.rsplit(':', 1)
+            else:
+                cursor_path = req_cursor
+                cursor_param = cursor_path.split('.')[-1]
+            cursor_value = pick(cursor_path, response)
+            next_url = (
+                f'{req_url}&{cursor_param}={cursor_value}' if cursor_value else None
+            )
         elif links_headers and isinstance(result, list):
             row_data += result
-            nu = next((l for l in links_headers if l['rel'] == 'next'), {}).get('url')
+            link_dict: Dict[Any, Any] = next(
+                (l for l in links_headers if l['rel'] == 'next'), {}
+            )
+            nu: Optional[str] = link_dict.get('url')
             next_url = nu if nu != next_url else None
         else:
             row_data = result
             next_url = None
 
+    LOG.debug(f'Returning row_data with count: {len(row_data)}')
     return row_data

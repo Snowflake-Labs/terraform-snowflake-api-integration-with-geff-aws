@@ -5,7 +5,10 @@ variable "aws_region" {
 
 variable "prefix" {
   type        = string
-  description = "this will be the prefix used to name the Resources"
+  description = <<EOT
+    This will be the prefix used to name the Resources.
+    WARNING: Enter a short prefix in order to prevent name length related restrictions
+  EOT
   default     = "example"
 }
 
@@ -17,7 +20,7 @@ variable "aws_cloudwatch_metric_namespace" {
 
 variable "log_retention_days" {
   description = "Log retention period in days."
-  default     = 0
+  default     = 0 # Forever
 }
 
 variable "env" {
@@ -48,8 +51,23 @@ variable "snowflake_password" {
 
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
+data "aws_partition" "current" {}
 
 locals {
-  account_id  = data.aws_caller_identity.current.account_id
-  region_name = data.aws_region.current.name
+  account_id = data.aws_caller_identity.current.account_id
+  aws_region = data.aws_region.current.name
+}
+
+locals {
+  inferred_api_gw_invoke_url = "https://${aws_api_gateway_rest_api.ef_to_lambda.id}.execute-api.${local.aws_region}.amazonaws.com/"
+  geff_prefix                = "${var.prefix}_geff"
+}
+
+locals {
+  lambda_function_name    = "${local.geff_prefix}_lambda"
+  api_gw_caller_role_name = "${local.geff_prefix}_api_gateway_caller"
+  api_gw_logger_role_name = "${local.geff_prefix}_api_gateway_logger"
+  s3_caller_role_name     = "${local.geff_prefix}_s3_caller"
+  s3_sns_policy_name      = "${local.geff_prefix}_s3_sns_topic_policy"
+  s3_sns_topic_name       = "${local.geff_prefix}_bucket_sns"
 }

@@ -1,31 +1,21 @@
-resource "aws_iam_policy" "cloudwatch_write" {
-  name = "${var.prefix}-cloudwatch-setup-and-write"
-  path = "/service-role/"
-  policy = jsonencode(
-    {
-      Version = "2012-10-17"
-      Statement = [
-        {
-          Sid    = "AllowWritingLogs",
-          Effect = "Allow",
-          Action = [
-            "logs:PutLogEvents",
-            "logs:CreateLogStream",
-            "logs:CreateLogGroup"
-          ],
-          Resource = "arn:aws:logs:*:*:*"
-        },
-        {
-          Effect   = "Allow",
-          Action   = "cloudwatch:PutMetricData",
-          Resource = "*"
-          Condition = {
-            StringLike = {
-              "cloudwatch:namespace" = var.aws_cloudwatch_metric_namespace
-            }
-          }
-        },
-      ]
-    }
-  )
+resource "aws_cloudwatch_log_group" "geff_lambda_log_group" {
+  name              = "/aws/lambda/${local.geff_prefix}_lambda"
+  retention_in_days = var.log_retention_days
+
+  tags = {
+    Name        = "${local.geff_prefix}_lambda"
+    Environment = var.env
+  }
+}
+
+resource "aws_cloudwatch_log_group" "geff_api_gateway_log_group" {
+  # We can't change this log group name, as it is fixed by AWS.
+  # https://github.com/hashicorp/terraform-provider-aws/issues/8413
+  name              = "API-Gateway-Execution-Logs_${aws_api_gateway_rest_api.ef_to_lambda.id}/${var.env}"
+  retention_in_days = var.log_retention_days
+
+  tags = {
+    Name        = "${local.geff_prefix}_api_gateway"
+    Environment = var.env
+  }
 }
