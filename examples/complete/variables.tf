@@ -41,6 +41,27 @@ variable "snowflake_password" {
   sensitive = true
 }
 
+variable "deploy_in_vpc" {
+  type        = bool
+  default     = false
+  description = "The security group VPC ID for the lambda function."
+}
+
+variable "lambda_security_group_vpc_id" {
+  type        = string
+  description = "The security group VPC ID for the lambda function."
+}
+
+variable "lambda_security_group_id" {
+  type        = string
+  description = "The security group ID for the lambda function."
+}
+
+variable "lambda_subnet_id" {
+  type        = string
+  description = "The subnet ID for the lambda function."
+}
+
 data "aws_caller_identity" "current" {}
 
 locals {

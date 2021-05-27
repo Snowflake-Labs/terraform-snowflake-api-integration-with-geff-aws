@@ -86,8 +86,12 @@ resource "aws_api_gateway_deployment" "geff_api_gw_deployment" {
   }
 
   # We ensure that the deployment of the gateway happens only after:
-  # The API integration has been created.
-  depends_on = [aws_api_gateway_integration.https_to_lambda]
+  # 1. The API integration has been created.
+  # 2. Rest API Policy needs to be created for this to not have to deploy again once the resource policy changes
+  depends_on = [
+    aws_api_gateway_integration.https_to_lambda,
+    aws_api_gateway_rest_api_policy.ef_to_lambda
+  ]
 }
 
 resource "aws_api_gateway_stage" "geff_api_gw_stage" {
