@@ -45,20 +45,6 @@ resource "aws_api_gateway_method" "https_any_method" {
   http_method    = "ANY"
   authorization  = "AWS_IAM"
   request_models = {}
-
-  request_parameters = {
-    "method.request.header.sf-custom-base-url"      = false
-    "method.request.header.sf-custom-url"           = false
-    "method.request.header.sf-custom-method"        = false
-    "method.request.header.sf-custom-headers"       = false
-    "method.request.header.sf-custom-params"        = false
-    "method.request.header.sf-custom-data"          = false
-    "method.request.header.sf-custom-json"          = false
-    "method.request.header.sf-custom-timeout"       = false
-    "method.request.header.sf-custom-auth"          = false
-    "method.request.header.sf-custom-response-type" = false
-    "method.request.header.sf-custom-verbose"       = false
-  }
 }
 
 resource "aws_api_gateway_integration" "https_to_lambda" {
