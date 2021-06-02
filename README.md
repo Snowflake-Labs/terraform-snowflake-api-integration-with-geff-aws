@@ -8,5 +8,4 @@ Terraform module to create a snowflake API integrations and dependent resources 
 - **API Integration** to expose interface to Snowflake External Functions
 - **Storage Integration** to expose interface to ingest data responses
 
-![image](https://user-images.githubusercontent.com/72515998/120511957-8704cd80-c3e8-11eb-84b8-22beae2c97f4.png)
-
+![image](https://user-images.githubusercontent.com/72515998/120512272-d4813a80-c3e8-11eb-8e81-b732da7fca8c.png)
