@@ -7,4 +7,8 @@ module "snowflake_api_integration_aws_gateway" {
   snowflake_account               = var.snowflake_account
   snowflake_password              = var.snowflake_password
   snowflake_role                  = var.snowflake_role
+
+  deploy_in_vpc             = var.deploy_in_vpc
+  lambda_security_group_ids = var.lambda_security_group_ids
+  lambda_subnet_ids         = var.lambda_subnet_ids
 }
