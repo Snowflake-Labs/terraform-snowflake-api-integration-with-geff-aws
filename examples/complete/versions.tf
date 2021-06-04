@@ -3,7 +3,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "3.37.0"
+      version = "3.38.0"
     }
     snowflake = {
       source  = "chanzuckerberg/snowflake"
@@ -21,4 +21,9 @@ provider "snowflake" {
 
 provider "aws" {
   region = var.aws_region
+  default_tags {
+    tags = {
+      Environment = var.env
+    }
+  }
 }
