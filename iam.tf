@@ -86,15 +86,14 @@ resource "aws_iam_role" "s3_caller" {
     Version = "2012-10-17"
     Statement = [
       {
-        "Sid" : "",
-        "Effect" : "Allow",
-        "Principal" : {
-          "AWS" : snowflake_storage_integration.geff_storage_integration.storage_aws_iam_user_arn
-        },
-        "Action" : "sts:AssumeRole",
-        "Condition" : {
-          "StringEquals" : {
-            "sts:ExternalId" : snowflake_storage_integration.geff_storage_integration.storage_aws_external_id
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          AWS = "${snowflake_storage_integration.geff_storage_integration.storage_aws_iam_user_arn}"
+        }
+        Condition = {
+          StringEquals = {
+            "sts:ExternalId" = "${snowflake_storage_integration.geff_storage_integration.storage_aws_external_id}"
           }
         }
       }
@@ -107,28 +106,26 @@ resource "aws_iam_role_policy" "s3_caller" {
   role = aws_iam_role.s3_caller.id
 
   policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
+    Version = "2012-10-17"
+    Statement = [
       {
-        "Effect" : "Allow",
-        "Action" : [
+        Effect = "Allow"
+        Action = [
           "s3:PutObject",
           "s3:GetObject",
           "s3:GetObjectVersion",
           "s3:DeleteObject",
           "s3:DeleteObjectVersion"
-        ],
-        "Resource" : "${aws_s3_bucket.geff_bucket.arn}/*"
+        ]
+        Resource = "${aws_s3_bucket.geff_bucket.arn}/*"
       },
       {
-        "Effect" : "Allow",
-        "Action" : "s3:ListBucket",
-        "Resource" : aws_s3_bucket.geff_bucket.arn,
-        "Condition" : {
-          "StringLike" : {
-            "s3:prefix" : [
-              "*"
-            ]
+        Effect   = "Allow"
+        Action   = "s3:ListBucket"
+        Resource = aws_s3_bucket.geff_bucket.arn
+        Condition = {
+          StringLike = {
+            "s3:prefix" = ["*"]
           }
         }
       }
@@ -227,4 +224,17 @@ resource "aws_iam_role_policy" "geff_lambda_policy" {
   name   = "${local.geff_prefix}_lambda_policy"
   role   = aws_iam_role.geff_lambda_assume_role.id
   policy = data.aws_iam_policy_document.geff_lambda_policy_doc.json
+}
+
+data "aws_iam_policy" "geff_lambda_vpc_policy" {
+  count = var.deploy_in_vpc ? 1 : 0
+  arn   = "arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess"
+}
+
+resource "aws_iam_policy_attachment" "geff_lambda_vpc_policy_attachment" {
+  count = var.deploy_in_vpc ? 1 : 0
+
+  name       = "${local.geff_prefix}_lambda_vpc_policy_attachment"
+  roles      = [aws_iam_role.geff_lambda_assume_role.name]
+  policy_arn = data.aws_iam_policy.geff_lambda_vpc_policy[0].arn
 }
