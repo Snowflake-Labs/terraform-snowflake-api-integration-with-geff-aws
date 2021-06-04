@@ -45,10 +45,6 @@ resource "aws_api_gateway_method" "https_any_method" {
   http_method    = "ANY"
   authorization  = "AWS_IAM"
   request_models = {}
-<<<<<<< HEAD
-  request_parameters = {}
-=======
->>>>>>> 900871cdde9e80aa8bddeb04728f4796a51b89a4
 }
 
 resource "aws_api_gateway_integration" "https_to_lambda" {
