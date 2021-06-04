@@ -47,19 +47,14 @@ variable "deploy_in_vpc" {
   description = "The security group VPC ID for the lambda function."
 }
 
-variable "lambda_security_group_vpc_id" {
-  type        = string
-  description = "The security group VPC ID for the lambda function."
+variable "lambda_security_group_ids" {
+  type        = list(string)
+  description = "The security group IDs for the lambda function."
 }
 
-variable "lambda_security_group_id" {
-  type        = string
-  description = "The security group ID for the lambda function."
-}
-
-variable "lambda_subnet_id" {
-  type        = string
-  description = "The subnet ID for the lambda function."
+variable "lambda_subnet_ids" {
+  type        = list(string)
+  description = "The subnet IDs for the lambda function."
 }
 
 data "aws_caller_identity" "current" {}

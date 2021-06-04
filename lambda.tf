@@ -52,8 +52,8 @@ resource "aws_lambda_function" "geff_lambda" {
   source_code_hash = data.archive_file.lambda_code.output_base64sha256
 
   vpc_config {
-    security_group_ids = var.deploy_in_vpc ? [var.lambda_security_group_id] : []
-    subnet_ids         = var.deploy_in_vpc ? [var.lambda_subnet_id] : []
+    security_group_ids = var.deploy_in_vpc ? var.lambda_security_group_ids : []
+    subnet_ids         = var.deploy_in_vpc ? var.lambda_subnet_ids : []
   }
 
   depends_on = [
