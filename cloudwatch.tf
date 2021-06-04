@@ -4,7 +4,6 @@ resource "aws_cloudwatch_log_group" "geff_lambda_log_group" {
 
   tags = {
     Name        = "${local.geff_prefix}_lambda"
-    Environment = var.env
   }
 }
 
@@ -16,6 +15,5 @@ resource "aws_cloudwatch_log_group" "geff_api_gateway_log_group" {
 
   tags = {
     Name        = "${local.geff_prefix}_api_gateway"
-    Environment = var.env
   }
 }
