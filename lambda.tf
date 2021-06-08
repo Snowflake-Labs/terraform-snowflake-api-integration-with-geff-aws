@@ -9,7 +9,7 @@ resource "null_resource" "install_python_dependencies" {
   # If this always runs archive_file is fine, else we have an issue during refresh:
   # https://github.com/hashicorp/terraform-provider-archive/issues/78
   triggers = {
-    always_run = "${timestamp()}"
+    always_run = timestamp()
   }
 
   provisioner "local-exec" {
@@ -67,7 +67,7 @@ resource "null_resource" "clean_up_pip_files" {
   # If this always runs archive_file is fine, else we have an issue during refresh:
   # https://github.com/hashicorp/terraform-provider-archive/issues/78
   triggers = {
-    always_run = "${timestamp()}"
+    always_run = timestamp()
   }
 
   provisioner "local-exec" {
