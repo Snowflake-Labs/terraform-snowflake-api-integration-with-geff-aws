@@ -6,3 +6,4 @@ snowflake_role              = "role_name"
 snowflake_username          = "username"
 snowflake_password          = "password"
 env                         = "dev/prod/staging/test"
+deploy_in_vpc               = false
