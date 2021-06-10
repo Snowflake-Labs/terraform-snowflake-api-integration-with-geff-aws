@@ -4,7 +4,7 @@ from random import sample
 from typing import Any, AnyStr, Dict, Generator, List, Optional, Text, Tuple, Union
 from urllib.parse import urlparse
 
-import boto3
+import boto3  # type: ignore
 from botocore.exceptions import ClientError
 from utils import LOG
 

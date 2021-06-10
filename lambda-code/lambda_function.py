@@ -6,6 +6,7 @@ from json import dumps, loads
 from typing import Any, Dict, Text
 from urllib.parse import urlparse
 
+from log import format_trace
 from utils import LOG, create_response, format, invoke_process_lambda, zip
 
 # pip install --target ./site-packages -r requirements.txt
@@ -131,9 +132,8 @@ def sync_flow(event: Any, context: Any = None) -> Dict[Text, Any]:
                 row_result = destination_driver.write(  # type: ignore
                     write_uri, batch_id, row_result, row_number
                 )
-
         except Exception as e:
-            row_result = [{'error': repr(e)}]
+            row_result = [{'error': repr(e), 'trace': format_trace(e)}]
 
         res_data.append(
             [
