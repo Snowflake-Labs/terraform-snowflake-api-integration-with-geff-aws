@@ -3,6 +3,8 @@ import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+from vault import decrypt_if_encrypted
+
 
 def process_row(
     user,
