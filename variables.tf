@@ -1,3 +1,20 @@
+# Required Variables
+variable "snowflake_username" {
+  type      = string
+  sensitive = true
+}
+
+variable "snowflake_password" {
+  type      = string
+  sensitive = true
+}
+
+variable "snowflake_account" {
+  type      = string
+  sensitive = true
+}
+
+# Optional Variables
 variable "aws_region" {
   description = "The AWS region in which the AWS infrastructure is created."
   default     = "us-west-2"
@@ -25,13 +42,8 @@ variable "log_retention_days" {
 
 variable "env" {
   type        = string
-  default     = "dev"
   description = "Dev/Prod/Staging or any other custom environment name."
-}
-
-variable "snowflake_account" {
-  type      = string
-  sensitive = true
+  default     = "dev"
 }
 
 variable "snowflake_role" {
@@ -39,20 +51,10 @@ variable "snowflake_role" {
   default = "ACCOUNTADMIN"
 }
 
-variable "snowflake_username" {
-  type      = string
-  sensitive = true
-}
-
-variable "snowflake_password" {
-  type      = string
-  sensitive = true
-}
-
 variable "deploy_in_vpc" {
   type        = bool
-  default     = false
   description = "The security group VPC ID for the lambda function."
+  default     = false
 }
 
 variable "lambda_security_group_ids" {
@@ -86,7 +88,7 @@ locals {
   lambda_function_name    = "${local.geff_prefix}_lambda"
   api_gw_caller_role_name = "${local.geff_prefix}_api_gateway_caller"
   api_gw_logger_role_name = "${local.geff_prefix}_api_gateway_logger"
-  s3_caller_role_name     = "${local.geff_prefix}_s3_caller"
+  s3_reader_role_name     = "${local.geff_prefix}_s3_reader"
   s3_sns_policy_name      = "${local.geff_prefix}_s3_sns_topic_policy"
   s3_sns_topic_name       = "${local.geff_prefix}_bucket_sns"
 }

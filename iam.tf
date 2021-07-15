@@ -78,8 +78,8 @@ resource "aws_iam_role_policy" "gateway_caller_policy" {
 # ---------------------------------------------
 # 3. Role, Role Policy for Storage Integration.
 # ---------------------------------------------
-resource "aws_iam_role" "s3_caller" {
-  name = local.s3_caller_role_name
+resource "aws_iam_role" "s3_reader" {
+  name = local.s3_reader_role_name
   path = "/"
 
   assume_role_policy = jsonencode({
@@ -101,9 +101,9 @@ resource "aws_iam_role" "s3_caller" {
   })
 }
 
-resource "aws_iam_role_policy" "s3_caller" {
+resource "aws_iam_role_policy" "s3_reader" {
   name = "${var.prefix}_rw_to_s3_bucket_policy"
-  role = aws_iam_role.s3_caller.id
+  role = aws_iam_role.s3_reader.id
 
   policy = jsonencode({
     Version = "2012-10-17"
