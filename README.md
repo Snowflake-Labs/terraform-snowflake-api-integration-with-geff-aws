@@ -12,12 +12,14 @@ Terraform module to create a snowflake API integrations and dependent resources 
 
 ## Prerequisites
 
-1. Keep username and password ready for a snowflake user that has access to create api and storage integrations
-2.
+Keep username and password ready for a snowflake user that has access to create api and storage integrations
 
 ## Setup Instructions
 
 ```bash
+# Navigate to the examples/complete dir
+cd examples/complete
+
 # Copy the sample tfvars file
 mv example.tfvars.sample geff.tfvars
 
