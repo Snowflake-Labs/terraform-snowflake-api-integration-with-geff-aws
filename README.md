@@ -10,7 +10,6 @@ Terraform module to create a snowflake API integrations and dependent resources 
 
 ![image](https://user-images.githubusercontent.com/72515998/125895344-dfb554a3-d574-4b4c-a8bb-e89cc9a20e10.png)
 
-
 ## Setup Instructions
 
 ```bash
