@@ -1,12 +1,14 @@
-# Generic External Function Framework (GEFF) Infrastructure
+# GEFF Terraform Module
 
-Terraform module to create a snowflake API integrations and dependent resources such as:
+The Generic External Function Framework (GEFF) is extensible Python code which can be called using a [Snowflake External Function](https://docs.snowflake.com/en/sql-reference/external-functions-introduction.html) that allows Snowflake operators to perform generic invocations of Call Drivers (e.g. HTTP, SMTP, XML-RPC) and either return or write responses to generic Destination Drivers (e.g. S3). This empowers them to create new pipelines in Data Infrastructure while using reviewed and standardized RBAC and interaction with Cloud Infrastructure for secrets management.
 
-- **GEFF Lambda** for calling APIs and loading responses
-- **API Gateway** to manage executions of Lambda
-- **IAM Role** for Snowflake to make invoke API Gateway
-- **API Integration** to expose interface to Snowflake External Functions
-- **Storage Integration** to expose interface to ingest data responses
+The Terraform module helps you create Snowflake and AWS resources:
+
+1. **AWS GEFF Lambda** for calling APIs and loading responses
+1. **Snowflake API Gateway** to manage executions of Lambda
+1. **AWS IAM Role** for Snowflake to make invoke API Gateway
+1. **Snowflake API Integration** to expose interface to Snowflake External Functions
+1. **Snowvlake Storage Integration** to expose interface to ingest data responses
 
 ![image](https://user-images.githubusercontent.com/72515998/125895344-dfb554a3-d574-4b4c-a8bb-e89cc9a20e10.png)
 
