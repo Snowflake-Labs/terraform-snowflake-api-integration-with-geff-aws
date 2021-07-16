@@ -10,9 +10,6 @@ Terraform module to create a snowflake API integrations and dependent resources 
 
 ![image](https://user-images.githubusercontent.com/72515998/120515966-7fdfbe80-c3ec-11eb-9d90-0bb9de895705.png)
 
-## Prerequisites
-
-Keep username and password ready for a snowflake user that has access to create api and storage integrations
 
 ## Setup Instructions
 
