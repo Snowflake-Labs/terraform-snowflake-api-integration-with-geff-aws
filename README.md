@@ -8,7 +8,7 @@ The Terraform module helps you create Snowflake and AWS resources:
 1. **Snowflake API Gateway** to manage executions of Lambda
 1. **AWS IAM Role** for Snowflake to make invoke API Gateway
 1. **Snowflake API Integration** to expose interface to Snowflake External Functions
-1. **Snowvlake Storage Integration** to expose interface to ingest data responses
+1. **Snowflake Storage Integration** to expose interface to ingest data responses
 
 ![image](https://user-images.githubusercontent.com/72515998/125895344-dfb554a3-d574-4b4c-a8bb-e89cc9a20e10.png)
 
