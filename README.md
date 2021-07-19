@@ -19,7 +19,7 @@ The Terraform module helps you create Snowflake and AWS resources:
 cd examples/complete
 
 # Copy the sample tfvars file
-mv example.tfvars.sample geff.tfvars
+cp example.tfvars.sample geff.tfvars
 
 # Modify the values in the tfvars, input appropriate credentials and values per your environment.
 
