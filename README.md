@@ -28,3 +28,7 @@ terraform init
 terraform plan -var-file=geff.tfvars -out=geff.plan
 terraform apply "geff.plan"
 ```
+
+## Usage
+
+You can use the `terraform output` to create Snowflake External Functions, Stages, and PIPE's for ingestion, as well as Snowflake External Functions to send data into other systems, (e.g. Tines, PipeDream).
