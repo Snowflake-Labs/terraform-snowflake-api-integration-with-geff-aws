@@ -4,6 +4,10 @@ echo "Executing create_dist_pkg.sh..."
 
 cd $path_module
 pwd
+
+echo "Cloning git repo..."
+git clone git@github.com:Snowflake-Labs/geff.git
+
 echo "Source code path is $source_code_path"
 source_code_dist_dir=./$source_code_dist_dir_name/
 install_path_dir=./$source_code_dist_dir_name/site-packages/

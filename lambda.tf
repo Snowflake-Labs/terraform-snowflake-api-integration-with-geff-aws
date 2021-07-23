@@ -1,5 +1,6 @@
 locals {
-  source_code_path          = "lambda-code"
+  source_code_repo_dir_path = "geff"
+  lambda_code_dir           = "lambda_src"
   output_dist_file_name     = "lambda-code.zip"
   runtime                   = "python3.8"
   source_code_dist_dir_name = "lambda-code-dist"
@@ -16,7 +17,7 @@ resource "null_resource" "install_python_dependencies" {
     command = "bash ${path.module}/scripts/create_dist_pkg.sh"
 
     environment = {
-      source_code_path          = local.source_code_path
+      source_code_path          = "${local.source_code_repo_dir_path}/${local.lambda_code_dir}"
       source_code_dist_dir_name = local.source_code_dist_dir_name
       runtime                   = local.runtime
       path_module               = path.module
@@ -75,6 +76,7 @@ resource "null_resource" "clean_up_pip_files" {
 
     environment = {
       source_code_dist_dir_name = local.source_code_dist_dir_name
+      source_code_repo_dir_path = local.source_code_repo_dir_path
       path_module               = path.module
       path_cwd                  = path.cwd
       dist_archive_file_name    = local.output_dist_file_name

@@ -114,8 +114,6 @@ resource "aws_iam_role_policy" "s3_reader" {
           "s3:PutObject",
           "s3:GetObject",
           "s3:GetObjectVersion",
-          "s3:DeleteObject",
-          "s3:DeleteObjectVersion",
         ]
         Resource = "${aws_s3_bucket.geff_bucket.arn}/*"
       },
@@ -194,9 +192,6 @@ data "aws_iam_policy_document" "geff_lambda_policy_doc" {
       "s3:PutObject",
       "s3:GetObject",
       "s3:GetObjectVersion",
-      "s3:DeleteObject",
-      "s3:DeleteObjectVersion",
-      "s3:ListBucket"
     ]
   }
 
