@@ -116,14 +116,14 @@ def process_row(
                 if res.headers.get('Content-Encoding') == 'gzip'
                 else res_body
             )
-            response_body = loads(raw_response)
-            LOG.debug('Extracted data from response.')
-
             response_date = (
                 parsedate_to_datetime(response_headers['Date']).isoformat()
                 if 'Date' in response_headers
                 else None
             )
+            response_body = loads(raw_response)
+            LOG.debug('Extracted data from response.')
+
             response = (
                 {
                     'body': response_body,
@@ -135,9 +135,18 @@ def process_row(
             )
             result = pick(req_results_path, response)
         except HTTPError as e:
+            response_body = e.read().decode()
+            content_type = e.headers.get('Content-Type')
             result = {
-                'error': f'{e.code} {e.reason}',
+                'error': 'HTTPError',
                 'url': next_url,
+                'status': e.code,
+                'reason': e.reason,
+                'body': (
+                    loads(response_body)
+                    if content_type.startswith('application/json')
+                    else response_body
+                ),
             }
         except URLError as e:
             result = {
@@ -147,8 +156,8 @@ def process_row(
             }
         except JSONDecodeError as e:
             result = {
-                'error': 'JSONDecodeError' if response_body else 'No Content',
-                'body': response_body.decode(),
+                'error': 'JSONDecodeError' if raw_response else 'No Content',
+                'body': raw_response.decode(),
                 'status': res.status,
                 'responded_at': response_date,
             }
