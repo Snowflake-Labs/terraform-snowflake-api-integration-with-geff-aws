@@ -8,8 +8,13 @@ resource "aws_s3_bucket_object" "geff_meta_folder" {
   key    = "meta/"
 }
 
+resource "random_string" "random" {
+  length  = 5
+  special = false
+}
+
 resource "aws_sns_topic" "geff_bucket_sns" {
-  name = local.s3_sns_topic_name
+  name = "${local.s3_sns_topic_name}_${random_string.random.result}"
 }
 
 data "aws_iam_policy_document" "geff_s3_sns_topic_policy_doc" {
