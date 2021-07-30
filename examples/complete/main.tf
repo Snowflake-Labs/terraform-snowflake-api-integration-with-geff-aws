@@ -1,12 +1,3 @@
-provider "aws" {
-  region = var.aws_region
-  default_tags {
-    tags = {
-      Environment = var.env
-    }
-  }
-}
-
 module "geff" {
   source                          = "../../"
   prefix                          = var.prefix
@@ -14,7 +5,7 @@ module "geff" {
   env                             = var.env
   snowflake_username              = var.snowflake_username
   snowflake_account               = var.snowflake_account
-  snowflake_password              = var.snowflake_password
+  snowflake_private_key_path      = var.snowflake_private_key_path
   snowflake_role                  = var.snowflake_role
 
   deploy_in_vpc             = var.deploy_in_vpc
