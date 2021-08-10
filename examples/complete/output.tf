@@ -18,7 +18,7 @@ output "bucket_url" {
   value       = module.geff.bucket_url
 }
 
-output "s3_sns_topic_arn" {
+output "sns_topic_arn" {
   description = "GEFF S3 SNS Topic to use while creating the Snowflake PIPE."
-  value       = module.geff.s3_sns_topic_arn
+  value       = module.geff.sns_topic_arn
 }

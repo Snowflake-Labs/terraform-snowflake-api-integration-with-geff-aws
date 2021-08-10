@@ -18,7 +18,7 @@ output "bucket_url" {
   value       = "s3://${aws_s3_bucket.geff_bucket.id}/"
 }
 
-output "s3_sns_topic_arn" {
+output "sns_topic_arn" {
   description = "GEFF S3 SNS Topic to use while creating the Snowflake PIPE."
   value       = aws_sns_topic.geff_bucket_sns.arn
 }
