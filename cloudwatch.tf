@@ -3,7 +3,7 @@ resource "aws_cloudwatch_log_group" "geff_lambda_log_group" {
   retention_in_days = var.log_retention_days
 
   tags = {
-    Name        = "${local.geff_prefix}_lambda"
+    Name = "${local.geff_prefix}_lambda"
   }
 }
 
@@ -14,6 +14,6 @@ resource "aws_cloudwatch_log_group" "geff_api_gateway_log_group" {
   retention_in_days = var.log_retention_days
 
   tags = {
-    Name        = "${local.geff_prefix}_api_gateway"
+    Name = "${local.geff_prefix}_api_gateway"
   }
 }
