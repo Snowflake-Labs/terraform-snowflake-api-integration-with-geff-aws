@@ -62,11 +62,6 @@ variable "snowflake_password" {
   description = "Password."
 }
 
-variable "snowflake_password" {
-  type    = string
-  default = null
-}
-
 variable "snowflake_private_key_path" {
   type    = string
   default = null
