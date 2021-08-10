@@ -1,3 +1,20 @@
+# Required
+variable "snowflake_account" {
+  type      = string
+  sensitive = true
+}
+
+variable "snowflake_username" {
+  type      = string
+  sensitive = true
+}
+
+# Optional
+variable "snowflake_role" {
+  type    = string
+  default = "ACCOUNTADMIN"
+}
+
 variable "aws_region" {
   description = "The AWS region in which the AWS infrastructure is created."
   type        = string
@@ -21,26 +38,6 @@ variable "env" {
   default = "prod"
 }
 
-variable "snowflake_account" {
-  type      = string
-  sensitive = true
-}
-
-variable "snowflake_role" {
-  type    = string
-  default = "ACCOUNTADMIN"
-}
-
-variable "snowflake_username" {
-  type      = string
-  sensitive = true
-}
-
-variable "snowflake_password" {
-  type      = string
-  sensitive = true
-}
-
 variable "deploy_in_vpc" {
   type        = bool
   default     = false
@@ -57,6 +54,17 @@ variable "lambda_subnet_ids" {
   type        = list(string)
   default     = []
   description = "The subnet IDs for the lambda function."
+}
+
+variable "snowflake_password" {
+  type        = string
+  default     = null
+  description = "Password."
+}
+
+variable "snowflake_private_key_path" {
+  type    = string
+  default = null
 }
 
 data "aws_caller_identity" "current" {}
