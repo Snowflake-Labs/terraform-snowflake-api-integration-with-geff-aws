@@ -1,11 +1,6 @@
 output "api_gateway_invoke_url" {
-  description = "List of all invoked url"
-  value       = aws_api_gateway_deployment.geff_api_gw_deployment.invoke_url
-}
-
-output "allowed_prefixes" {
   description = "This is the inferred API Gateway invoke URL which we use as allowed prefixes."
-  value       = local.inferred_api_gw_invoke_url
+  value       = aws_api_gateway_deployment.geff_api_gw_deployment.invoke_url
 }
 
 output "api_integration_name" {

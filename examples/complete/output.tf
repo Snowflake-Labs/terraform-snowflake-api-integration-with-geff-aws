@@ -1,11 +1,6 @@
 output "api_gateway_invoke_url" {
-  description = "List of all invoked url"
-  value       = module.geff.api_gateway_invoke_url
-}
-
-output "allowed_prefixes" {
   description = "This is the inferred API Gateway invoke URL which we use as allowed prefixes."
-  value       = module.geff.allowed_prefixes
+  value       = module.geff.api_gateway_invoke_url
 }
 
 output "api_integration_name" {
