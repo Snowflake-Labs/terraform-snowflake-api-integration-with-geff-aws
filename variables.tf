@@ -64,16 +64,10 @@ variable "lambda_subnet_ids" {
   description = "The subnet IDs for the lambda function."
 }
 
-
 variable "snowflake_password" {
   type        = string
   default     = null
   description = "Password."
-}
-
-variable "snowflake_password" {
-  type    = string
-  default = null
 }
 
 variable "snowflake_private_key_path" {
