@@ -8,7 +8,7 @@ module "geff" {
   snowflake_private_key_path      = var.snowflake_private_key_path
   snowflake_role                  = var.snowflake_role
 
-  deploy_lambda_in_vpc      = var.deploy_in_vpc
+  deploy_lambda_in_vpc      = var.deploy_lambda_in_vpc
   lambda_security_group_ids = var.lambda_security_group_ids
   lambda_subnet_ids         = var.lambda_subnet_ids
 }
