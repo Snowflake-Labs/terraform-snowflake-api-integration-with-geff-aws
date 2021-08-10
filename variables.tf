@@ -46,7 +46,7 @@ variable "snowflake_role" {
   default = "ACCOUNTADMIN"
 }
 
-variable "deploy_in_vpc" {
+variable "deploy_lambda_in_vpc" {
   type        = bool
   description = "The security group VPC ID for the lambda function."
   default     = false

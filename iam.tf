@@ -245,12 +245,12 @@ resource "aws_iam_role_policy" "geff_lambda_policy" {
 }
 
 data "aws_iam_policy" "geff_lambda_vpc_policy" {
-  count = var.deploy_in_vpc ? 1 : 0
+  count = var.deploy_lambda_in_vpc ? 1 : 0
   arn   = "arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess"
 }
 
 resource "aws_iam_policy_attachment" "geff_lambda_vpc_policy_attachment" {
-  count = var.deploy_in_vpc ? 1 : 0
+  count = var.deploy_lambda_in_vpc ? 1 : 0
 
   name       = "${local.geff_prefix}_lambda_vpc_policy_attachment"
   roles      = [aws_iam_role.geff_lambda_assume_role.name]

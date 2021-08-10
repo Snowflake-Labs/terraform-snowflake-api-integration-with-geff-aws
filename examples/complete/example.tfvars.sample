@@ -3,11 +3,14 @@
 # Required Variables
 snowflake_account           = "snowflake_account_id"
 snowflake_username          = "username"
+
+# One of password or private key path is required
 snowflake_password          = "password"
 
 # Optional Variables
-aws_region                  = "us-west-1"
+aws_region                  = "us-west-2"
 prefix                      = "any_custom_prefix"
 snowflake_role              = "role_name"
 env                         = "dev/prod/staging/test"
-deploy_in_vpc               = false
+
+deploy_lambda_in_vpc               = false

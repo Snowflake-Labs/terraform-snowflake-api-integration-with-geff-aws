@@ -38,7 +38,7 @@ variable "env" {
   default = "prod"
 }
 
-variable "deploy_in_vpc" {
+variable "deploy_lambda_in_vpc" {
   type        = bool
   default     = false
   description = "The security group VPC ID for the lambda function."
