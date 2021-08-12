@@ -13,4 +13,4 @@ prefix                      = "any_custom_prefix"
 snowflake_role              = "role_name"
 env                         = "dev/prod/staging/test"
 
-deploy_lambda_in_vpc               = false
+deploy_lambda_in_vpc        = false
