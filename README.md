@@ -5,7 +5,7 @@ The Generic External Function Framework (GEFF) is a generic backend for [Snowfla
 This project uses Terraform to build the AWS and Snowflake resources required to run a Python Lambda version of GEFF for arbitrary interactions with remote services using Snowflake and the (optional) writing of responses to an S3 bucket.
 
 It helps automate creation of:
-[API Integrations](https://docs.snowflake.com/en/sql-reference/sql/create-api-integration.html  for [External Functions](https://docs.snowflake.com/en/sql-reference/sql/create-external-function.html) in Snowflake and [supporting AWS infra](https://docs.snowflake.com/en/sql-reference/external-functions-creating-aws-ui.html).
+[API Integrations](https://docs.snowflake.com/en/sql-reference/sql/create-api-integration.html) for [External Functions](https://docs.snowflake.com/en/sql-reference/sql/create-external-function.html) in Snowflake and [supporting AWS infra](https://docs.snowflake.com/en/sql-reference/external-functions-creating-aws-ui.html).
 [Storage Integration](https://docs.snowflake.com/en/sql-reference/sql/create-storage-integration.html) for [Snowpipes](https://docs.snowflake.com/en/sql-reference/sql/create-pipe.html) and [supporting AWS infra](https://docs.snowflake.com/en/user-guide/data-load-snowpipe-auto-s3.html).
 
 Specifically, it helps you create the following AWS and Snowflake resources:
