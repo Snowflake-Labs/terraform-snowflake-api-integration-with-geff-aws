@@ -6,6 +6,7 @@ snowflake_username          = "username"
 
 # One of password or private key path is required
 snowflake_password          = "password"
+snowflake_private_key_path  = ""
 
 # Optional Variables
 aws_region                  = "us-west-2"
@@ -14,3 +15,5 @@ snowflake_role              = "role_name"
 env                         = "dev/prod/staging/test"
 
 deploy_lambda_in_vpc        = false
+lambda_security_group_ids   = []
+lambda_subnet_ids           = []
