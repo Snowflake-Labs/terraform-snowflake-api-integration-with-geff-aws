@@ -1,5 +1,7 @@
 # GEFF Terraform Module
 
+[![Terraform](https://github.com/Snowflake-Labs/terraform-snowflake-aws-geff/actions/workflows/terraform.yml/badge.svg?branch=main)](https://github.com/Snowflake-Labs/terraform-snowflake-aws-geff/actions/workflows/terraform.yml)
+
 The Generic External Function Framework (GEFF) is a generic backend for [Snowflake External Functions](https://docs.snowflake.com/en/sql-reference/external-functions-introduction.html) which allows Snowflake operators to perform generic invocations of Call Drivers (e.g. HTTP, SMTP, XML-RPC) and either return to Snowflake or write call responses using Destination Drivers (e.g. S3). This empowers them to create new pipelines in Snowflake's Data Cloud using a standardized RBAC structure and interactions with Cloud Infrastructure for authentication credentials and other secrets management.
 
 This project uses Terraform to build the AWS and Snowflake resources required to run a Python Lambda version of GEFF for arbitrary interactions with remote services using Snowflake and the (optional) writing of responses to an S3 bucket.
