@@ -23,7 +23,11 @@ Specifically, it helps you create the following AWS and Snowflake resources:
 
 ## Setup Instructions
 
+#### Clone and run from source examples
+
 ```bash
+# git clone https://github.com/Snowflake-Labs/terraform-snowflake-aws-geff.git
+
 # Navigate to the examples/complete dir
 cd examples/complete
 
@@ -36,6 +40,16 @@ cp example.tfvars.sample geff.tfvars
 terraform init
 terraform plan -var-file=geff.tfvars -out=geff.plan
 terraform apply "geff.plan"
+```
+
+#### Use in terraform code
+
+```hcl
+module "aws-geff" {
+  source  = "Snowflake-Labs/aws-geff/snowflake"
+  version = "1.x.x"
+  # insert the 5 required variables here
+}
 ```
 
 ## Usage
