@@ -45,13 +45,81 @@ terraform apply "geff.plan"
 #### Use in terraform code
 
 ```hcl
-module "aws-geff" {
+module "geff" {
   source  = "Snowflake-Labs/aws-geff/snowflake"
   version = "1.x.x"
-  # insert the 5 required variables here
+
+  prefix                          = var.prefix
+  aws_cloudwatch_metric_namespace = var.aws_cloudwatch_metric_namespace
+  env                             = var.env
+  snowflake_username              = var.snowflake_username
+  snowflake_account               = var.snowflake_account
+  snowflake_private_key_path      = var.snowflake_private_key_path
+  snowflake_role                  = var.snowflake_role
+  
+  deploy_in_vpc             = var.deploy_in_vpc
+  lambda_security_group_ids = var.lambda_security_group_ids
+  lambda_subnet_ids         = var.lambda_subnet_ids
 }
 ```
 
-## Usage
+## Usage in Snowflake
 
 You can use the `terraform output` to create Snowflake External Functions, Stages, and PIPEs for ingestion, as well as Snowflake External Functions to send data into other systems, (e.g. Tines, PipeDream).
+
+Let's assume this is the terraform output:
+
+```text
+api_gateway_invoke_url = "https://a1b2c3d4.execute-api.ap-east-2.amazonaws.com/"
+api_integration_name = "test_geff_api_integration"
+bucket_url = "s3://test-geff-bucket/"
+sns_topic_arn = "arn:aws:sns:ap-east-2:0123456789:test_geff_bucket_sns_x1y2z3"
+storage_integration_name = "test_geff_storage_integration"
+```
+
+
+
+### Create External Function
+```sql
+CREATE OR REPLACE SECURE EXTERNAL FUNCTION snowflake_db.snowflake_schema.pypi_packages_s3()
+RETURNS VARIANT
+RETURNS NULL ON NULL INPUT
+VOLATILE
+COMMENT='https://warehouse.pypa.io/api-reference/xml-rpc.html'
+API_INTEGRATION="test_geff_api_integration"
+HEADERS=(
+    'url'='https://pypi.org/pypi'
+    'method-name'='list_packages'
+    'destination-uri' = 's3://test-geff-bucket/pypi_packages/'
+)
+AS 'https://x1y2z3.execute-api.ap-east-2.amazonaws.com/prod_stage/xml-rpc';
+```
+
+### Create Stage
+```sql
+CREATE OR REPLACE STAGE snowflake_db.snowflake_schema.test_geff_bucket_stage
+STORAGE_INTEGRATION="test_geff_storage_integration"
+URL='s3://test-geff-bucket/pypi_packages'
+FILE_FORMAT=(
+  TYPE='JSON'
+)
+;
+```
+
+### Create Snowpipe
+```sql
+CREATE OR REPLACE PIPE new_db.public.pypi_raw_data_pipe
+    AUTO_INGEST=TRUE
+    aws_sns_topic = 'arn:aws:sns:ap-east-2:0123456789:pattest_geff_bucket_sns_x1y2z3'
+AS
+COPY INTO new_db.public.pypi_packages_raw(
+    name,
+    recorded_at
+)
+FROM (
+    SELECT
+        $1::STRING,
+        CURRENT_TIMESTAMP
+    FROM @pattest_geff_bucket/pypi_packages
+);
+```
