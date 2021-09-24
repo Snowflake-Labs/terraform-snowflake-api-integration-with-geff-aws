@@ -7,6 +7,7 @@ The Generic External Function Framework (GEFF) is a generic backend for [Snowfla
 This project uses Terraform to build the AWS and Snowflake resources required to run a Python Lambda version of GEFF for arbitrary interactions with remote services using Snowflake and the (optional) writing of responses to an S3 bucket.
 
 It helps automate creation of:
+
 - [API Integrations](https://docs.snowflake.com/en/sql-reference/sql/create-api-integration.html) for [External Functions](https://docs.snowflake.com/en/sql-reference/sql/create-external-function.html) in Snowflake and [supporting AWS infra](https://docs.snowflake.com/en/sql-reference/external-functions-creating-aws-ui.html).
 - [Storage Integration](https://docs.snowflake.com/en/sql-reference/sql/create-storage-integration.html) for [Snowpipes](https://docs.snowflake.com/en/sql-reference/sql/create-pipe.html) and [supporting AWS infra](https://docs.snowflake.com/en/user-guide/data-load-snowpipe-auto-s3.html).
 
@@ -56,7 +57,7 @@ module "geff" {
   snowflake_account               = var.snowflake_account
   snowflake_private_key_path      = var.snowflake_private_key_path
   snowflake_role                  = var.snowflake_role
-  
+
   deploy_in_vpc             = var.deploy_in_vpc
   lambda_security_group_ids = var.lambda_security_group_ids
   lambda_subnet_ids         = var.lambda_subnet_ids
@@ -77,9 +78,8 @@ sns_topic_arn = "arn:aws:sns:ap-east-2:0123456789:test_geff_bucket_sns_x1y2z3"
 storage_integration_name = "test_geff_storage_integration"
 ```
 
-
-
 ### Create External Function
+
 ```sql
 CREATE OR REPLACE SECURE EXTERNAL FUNCTION snowflake_db.snowflake_schema.pypi_packages_s3()
 RETURNS VARIANT
@@ -96,6 +96,7 @@ AS 'https://x1y2z3.execute-api.ap-east-2.amazonaws.com/prod_stage/xml-rpc';
 ```
 
 ### Create Stage
+
 ```sql
 CREATE OR REPLACE STAGE snowflake_db.snowflake_schema.test_geff_bucket_stage
 STORAGE_INTEGRATION="test_geff_storage_integration"
@@ -107,6 +108,7 @@ FILE_FORMAT=(
 ```
 
 ### Create Snowpipe
+
 ```sql
 CREATE OR REPLACE PIPE new_db.public.pypi_raw_data_pipe
     AUTO_INGEST=TRUE
