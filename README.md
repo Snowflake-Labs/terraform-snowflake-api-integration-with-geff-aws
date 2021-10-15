@@ -110,7 +110,7 @@ FILE_FORMAT=(
 ### Create Snowpipe
 
 ```sql
-CREATE OR REPLACE PIPE new_db.public.pypi_raw_data_pipe
+CREATE OR REPLACE PIPE snowflake_db.snowflake_schema.pypi_raw_data_pipe
     AUTO_INGEST=TRUE
     aws_sns_topic = 'arn:aws:sns:ap-east-2:0123456789:pattest_geff_bucket_sns_x1y2z3'
 AS
