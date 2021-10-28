@@ -1,9 +1,11 @@
+# The following variables are set:
+# export SNOWFLAKE_USER="snowflake_username"
+# export SNOWFLAKE_PRIVATE_KEY_PATH="~/.ssh/snowflake_key.p8"
+# export SNOWFLAKE_PRIVATE_KEY_PASSPHRASE="snowflake_passphrase"
+
 provider "snowflake" {
-  username         = var.snowflake_username
-  account          = var.snowflake_account
-  password         = var.snowflake_password
-  role             = var.snowflake_role
-  private_key_path = var.snowflake_private_key_path
+  account = var.snowflake_account
+  role    = var.snowflake_role
 }
 
 provider "aws" {
@@ -11,7 +13,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Environment = var.env
+      environment = var.env
     }
   }
 }
