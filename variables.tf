@@ -1,9 +1,4 @@
 # Required Variables
-variable "snowflake_username" {
-  type      = string
-  sensitive = true
-}
-
 variable "snowflake_account" {
   type      = string
   sensitive = true
@@ -64,16 +59,6 @@ variable "lambda_subnet_ids" {
   description = "The subnet IDs for the lambda function."
 }
 
-variable "snowflake_password" {
-  type        = string
-  default     = null
-  description = "Password."
-}
-
-variable "snowflake_private_key_path" {
-  type    = string
-  default = null
-}
 
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
