@@ -4,11 +4,6 @@ variable "snowflake_account" {
   sensitive = true
 }
 
-# variable "snowflake_username" {
-#   type      = string
-#   sensitive = true
-# }
-
 # Optional
 variable "snowflake_role" {
   type    = string
@@ -55,17 +50,6 @@ variable "lambda_subnet_ids" {
   default     = []
   description = "The subnet IDs for the lambda function."
 }
-
-# variable "snowflake_password" {
-#   type        = string
-#   default     = null
-#   description = "Password."
-# }
-
-# variable "snowflake_private_key_path" {
-#   type    = string
-#   default = null
-# }
 
 data "aws_caller_identity" "current" {}
 
