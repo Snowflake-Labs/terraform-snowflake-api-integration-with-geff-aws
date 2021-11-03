@@ -59,6 +59,11 @@ variable "lambda_subnet_ids" {
   description = "The subnet IDs for the lambda function."
 }
 
+variable "geff_image_version" {
+  type        = string
+  description = "Version of the GEFF docker image."
+  default     = "latest"
+}
 
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
@@ -67,6 +72,14 @@ data "aws_partition" "current" {}
 locals {
   account_id = data.aws_caller_identity.current.account_id
   aws_region = data.aws_region.current.name
+}
+
+locals {
+  lambda_image_repo = "${local.account_id}.dkr.ecr.${local.aws_region}.amazonaws.com/geff"
+}
+
+locals {
+  lambda_image_repo_version = "${local.lambda_image_repo}:${var.geff_image_version}"
 }
 
 locals {
