@@ -1,10 +1,6 @@
 locals {
   source_code_repo_dir_path = "geff"
-  # lambda_code_dir           = "lambda_src"
-  # output_dist_file_name     = "lambda-code.zip"
-  runtime = "python3.8"
-  # source_code_dist_dir_path = "lambda-code-dist"
-  # upload_dir                = "geff"
+  runtime                   = "python3.8"
 }
 
 
