@@ -9,7 +9,9 @@ resource "aws_lambda_function" "geff_lambda" {
   role          = aws_iam_role.geff_lambda_assume_role.arn
 
   memory_size = "4096" # 4 GB
-  timeout     = "900"  # 15 mins
+
+  # Here snowflake (client) timeout is 10 mins, lambda (server) timeout is 3s
+  timeout = "3" # Default
 
   image_uri    = local.lambda_image_repo_version
   package_type = "Image"
