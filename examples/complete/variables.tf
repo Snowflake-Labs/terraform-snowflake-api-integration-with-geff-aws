@@ -51,6 +51,12 @@ variable "lambda_subnet_ids" {
   description = "The subnet IDs for the lambda function."
 }
 
+variable "geff_image_version" {
+  type        = string
+  description = "Version of the GEFF docker image."
+  default     = "latest"
+}
+
 data "aws_caller_identity" "current" {}
 
 locals {
