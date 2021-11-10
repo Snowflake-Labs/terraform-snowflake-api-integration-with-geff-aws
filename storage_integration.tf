@@ -1,5 +1,5 @@
 resource "snowflake_storage_integration" "geff_storage_integration" {
-  name                      = "${replace(local.geff_prefix, "-", "_")}_storage_integration"
+  name                      = "${upper(replace(local.geff_prefix, "-", "_"))}_STORAGE_INTEGRATION"
   type                      = "EXTERNAL_STAGE"
   enabled                   = true
   storage_allowed_locations = ["s3://${aws_s3_bucket.geff_bucket.id}/"]
