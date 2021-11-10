@@ -24,6 +24,16 @@ Specifically, it helps you create the following AWS and Snowflake resources:
 
 ## Setup Instructions
 
+#### Build and Upload the GEFF docker image to ECR
+
+```bash
+# Clone repo
+git clone git@github.com:Snowflake-Labs/geff.git
+
+# Run ecr.sh
+./ecr.sh 123556660 us-west-2
+```
+
 #### Clone and run from source examples
 
 ```bash
