@@ -5,7 +5,7 @@ variable "snowflake_account" {
 }
 
 # Optional
-variable "snowflake_role" {
+variable "snowflake_integration_owner_role" {
   type    = string
   default = "ACCOUNTADMIN"
 }

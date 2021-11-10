@@ -36,7 +36,7 @@ variable "env" {
   default     = "dev"
 }
 
-variable "snowflake_role" {
+variable "snowflake_integration_owner_role" {
   type    = string
   default = "ACCOUNTADMIN"
 }
