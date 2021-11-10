@@ -6,7 +6,6 @@
 # export SNOWFLAKE_PRIVATE_KEY_PASSPHRASE="snowflake_passphrase"
 
 provider "snowflake" {
-  alias   = "api_integration"
   account = var.snowflake_account
   role    = var.snowflake_integration_owner_role
 }
