@@ -6,8 +6,8 @@ module "geff" {
   env    = var.env
 
   # Snowflake
-  snowflake_account = var.snowflake_account
-  snowflake_role    = var.snowflake_integration_owner_role
+  snowflake_account                = var.snowflake_account
+  snowflake_integration_owner_role = var.snowflake_integration_owner_role
 
   # AWS
   aws_cloudwatch_metric_namespace = var.aws_cloudwatch_metric_namespace
