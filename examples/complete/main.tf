@@ -16,5 +16,6 @@ module "geff" {
   lambda_security_group_ids       = var.lambda_security_group_ids
   lambda_subnet_ids               = var.lambda_subnet_ids
 
-  data_bucket_arns = var.data_bucket_arns
+  data_bucket_arns                 = var.data_bucket_arns
+  snowflake_integration_user_roles = var.snowflake_integration_user_roles
 }

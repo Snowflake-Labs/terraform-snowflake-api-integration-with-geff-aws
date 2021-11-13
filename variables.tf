@@ -41,6 +41,12 @@ variable "snowflake_integration_owner_role" {
   default = "ACCOUNTADMIN"
 }
 
+variable "snowflake_integration_user_roles" {
+  type        = list(string)
+  default     = []
+  description = "List of roles to which GEFF infra will GRANT USAGE ON INTEGRATION perms."
+}
+
 variable "deploy_lambda_in_vpc" {
   type        = bool
   description = "The security group VPC ID for the lambda function."

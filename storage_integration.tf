@@ -12,3 +12,12 @@ resource "snowflake_storage_integration" "geff_storage_integration" {
   storage_provider     = "S3"
   storage_aws_role_arn = "arn:aws:iam::${local.account_id}:role/${local.s3_reader_role_name}"
 }
+
+resource "snowflake_integration_grant" "geff_storage_integration_grant" {
+  integration_name = snowflake_storage_integration.geff_storage_integration.name
+
+  privilege = "USAGE"
+  roles     = var.snowflake_integration_user_roles
+
+  with_grant_option = false
+}
