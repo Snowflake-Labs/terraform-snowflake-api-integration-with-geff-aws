@@ -58,19 +58,25 @@ terraform apply "geff.plan"
 ```hcl
 module "geff" {
   source  = "Snowflake-Labs/aws-geff/snowflake"
-  version = "1.x.x"
+  version = "2.x.x"
 
-  prefix                          = var.prefix
+  # General
+  prefix = var.prefix
+  env    = var.env
+
+  # Snowflake
+  snowflake_account                = var.snowflake_account
+  snowflake_integration_owner_role = var.snowflake_integration_owner_role
+
+  # AWS
   aws_cloudwatch_metric_namespace = var.aws_cloudwatch_metric_namespace
-  env                             = var.env
-  snowflake_username              = var.snowflake_username
-  snowflake_account               = var.snowflake_account
-  snowflake_private_key_path      = var.snowflake_private_key_path
-  snowflake_role                  = var.snowflake_role
+  aws_region                      = var.aws_region
+  deploy_lambda_in_vpc            = var.deploy_lambda_in_vpc
+  lambda_security_group_ids       = var.lambda_security_group_ids
+  lambda_subnet_ids               = var.lambda_subnet_ids
 
-  deploy_in_vpc             = var.deploy_in_vpc
-  lambda_security_group_ids = var.lambda_security_group_ids
-  lambda_subnet_ids         = var.lambda_subnet_ids
+  data_bucket_arns                 = var.data_bucket_arns
+  snowflake_integration_user_roles = var.snowflake_integration_user_roles
 }
 ```
 
