@@ -10,6 +10,12 @@ variable "snowflake_integration_owner_role" {
   default = "ACCOUNTADMIN"
 }
 
+variable "snowflake_integration_user_roles" {
+  type        = list(string)
+  default     = []
+  description = "List of roles to which GEFF infra will GRANT USAGE ON INTEGRATION perms."
+}
+
 variable "aws_region" {
   description = "The AWS region in which the AWS infrastructure is created."
   type        = string
