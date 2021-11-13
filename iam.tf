@@ -101,34 +101,74 @@ resource "aws_iam_role" "s3_reader" {
   })
 }
 
+data "aws_iam_policy_document" "s3_reader_policy_doc" {
+  # Write logs to cloudwatch
+  statement {
+    sid       = "S3ReadWritePerms"
+    effect    = "Allow"
+    resources = ["${aws_s3_bucket.geff_bucket.arn}/*"]
+
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+    ]
+  }
+
+  statement {
+    sid       = "S3ListPerms"
+    effect    = "Allow"
+    resources = [aws_s3_bucket.geff_bucket.arn]
+
+    actions = ["s3:ListBucket"]
+
+    condition {
+      test     = "StringLike"
+      variable = "s3:prefix"
+      values   = ["*"]
+    }
+  }
+
+  dynamic "statement" {
+    for_each = var.data_bucket_arns
+
+    content {
+      sid       = "S3ReadWritePerms${statement.key}"
+      effect    = "Allow"
+      resources = ["${statement.value}/*"]
+
+      actions = [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:GetObjectVersion",
+      ]
+    }
+  }
+
+  dynamic "statement" {
+    for_each = var.data_bucket_arns
+
+    content {
+      sid       = "S3ListPerms${statement.key}"
+      effect    = "Allow"
+      resources = [statement.value]
+
+      actions = ["s3:ListBucket"]
+
+      condition {
+        test     = "StringLike"
+        variable = "s3:prefix"
+        values   = ["*"]
+      }
+    }
+  }
+}
+
 resource "aws_iam_role_policy" "s3_reader" {
   name = "${var.prefix}_rw_to_s3_bucket_policy"
   role = aws_iam_role.s3_reader.id
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:PutObject",
-          "s3:GetObject",
-          "s3:GetObjectVersion",
-        ]
-        Resource = "${aws_s3_bucket.geff_bucket.arn}/*"
-      },
-      {
-        Effect   = "Allow"
-        Action   = "s3:ListBucket"
-        Resource = aws_s3_bucket.geff_bucket.arn
-        Condition = {
-          StringLike = {
-            "s3:prefix" = ["*"]
-          }
-        }
-      }
-    ]
-  })
+  policy = data.aws_iam_policy_document.s3_reader_policy_doc.json
 }
 
 # -----------------------------------------------------------------------
