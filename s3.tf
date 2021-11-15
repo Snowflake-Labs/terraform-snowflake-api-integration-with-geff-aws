@@ -34,7 +34,10 @@ data "aws_iam_policy_document" "geff_s3_sns_topic_policy_doc" {
     condition {
       test     = "ArnLike"
       variable = "aws:SourceArn"
-      values   = [aws_s3_bucket.geff_bucket.arn]
+      values = concat(
+        [aws_s3_bucket.geff_bucket.arn],
+        var.data_bucket_arns
+      )
     }
   }
 
@@ -66,3 +69,17 @@ resource "aws_s3_bucket_notification" "geff_s3_bucket_notification" {
 
   depends_on = [aws_sns_topic_policy.geff_s3_sns_topic_policy]
 }
+
+resource "aws_s3_bucket_notification" "geff_s3_pipline_bucket_notification" {
+  for_each = toset(local.pipeline_bucket_ids)
+
+  bucket = each.key
+
+  topic {
+    topic_arn = aws_sns_topic.geff_bucket_sns.arn
+    events    = ["s3:ObjectCreated:*"]
+  }
+
+  depends_on = [aws_sns_topic_policy.geff_s3_sns_topic_policy]
+}
+
