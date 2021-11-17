@@ -1,4 +1,6 @@
 resource "snowflake_api_integration" "geff_api_integration" {
+  count = var.storage_only ? 0 : 1
+
   name                 = "${upper(replace(local.geff_prefix, "-", "_"))}_API_INTEGRATION"
   enabled              = true
   api_provider         = "aws_api_gateway"
@@ -7,7 +9,8 @@ resource "snowflake_api_integration" "geff_api_integration" {
 }
 
 resource "snowflake_integration_grant" "geff_api_integration_grant" {
-  integration_name = snowflake_api_integration.geff_api_integration.name
+  count            = var.storage_only ? 0 : 1
+  integration_name = snowflake_api_integration.geff_api_integration[0].name
 
   privilege = "USAGE"
   roles     = var.snowflake_integration_user_roles

@@ -77,6 +77,12 @@ variable "data_bucket_arns" {
   description = "List of Bucket ARNs for the s3_reader role to read from."
 }
 
+variable "storage_only" {
+  type        = bool
+  default     = false
+  description = "This flag allows to create the base infra for storage only pipelines."
+}
+
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 data "aws_partition" "current" {}
@@ -95,7 +101,7 @@ locals {
 }
 
 locals {
-  inferred_api_gw_invoke_url = "https://${aws_api_gateway_rest_api.ef_to_lambda.id}.execute-api.${local.aws_region}.amazonaws.com/"
+  inferred_api_gw_invoke_url = var.storage_only ? null : "https://${aws_api_gateway_rest_api.ef_to_lambda[0].id}.execute-api.${local.aws_region}.amazonaws.com/"
   geff_prefix                = "${var.prefix}_geff"
 }
 
