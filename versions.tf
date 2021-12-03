@@ -10,6 +10,11 @@ terraform {
     snowflake = {
       source  = "chanzuckerberg/snowflake"
       version = ">= 0.25.23"
+
+      configuration_aliases = [
+        snowflake.api_integration,
+        snowflake.storage_integration
+      ]
     }
   }
 }

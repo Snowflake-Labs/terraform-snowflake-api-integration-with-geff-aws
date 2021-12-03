@@ -7,6 +7,7 @@ variable "snowflake_account" {
 # Optional Variables
 variable "aws_region" {
   description = "The AWS region in which the AWS infrastructure is created."
+  type        = string
   default     = "us-west-2"
 }
 
@@ -36,7 +37,12 @@ variable "env" {
   default     = "dev"
 }
 
-variable "snowflake_integration_owner_role" {
+variable "snowflake_api_integration_owner_role" {
+  type    = string
+  default = "ACCOUNTADMIN"
+}
+
+variable "snowflake_storage_integration_owner_role" {
   type    = string
   default = "ACCOUNTADMIN"
 }
