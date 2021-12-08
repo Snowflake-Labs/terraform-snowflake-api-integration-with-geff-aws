@@ -5,6 +5,8 @@ locals {
 }
 
 resource "snowflake_storage_integration" "geff_storage_integration" {
+  provider = snowflake.storage_integration
+
   name    = "${upper(replace(local.geff_prefix, "-", "_"))}_STORAGE_INTEGRATION"
   type    = "EXTERNAL_STAGE"
   enabled = true
@@ -17,10 +19,10 @@ resource "snowflake_storage_integration" "geff_storage_integration" {
 }
 
 resource "snowflake_integration_grant" "geff_storage_integration_grant" {
-  integration_name = snowflake_storage_integration.geff_storage_integration.name
+  provider = snowflake.storage_integration
 
-  privilege = "USAGE"
-  roles     = var.snowflake_integration_user_roles
-
+  integration_name  = snowflake_storage_integration.geff_storage_integration.name
+  privilege         = "USAGE"
+  roles             = var.snowflake_integration_user_roles
   with_grant_option = false
 }
