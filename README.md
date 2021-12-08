@@ -1,4 +1,4 @@
-# GEFF Terraform Module
+# _Generic External Function Framework (GEFF) Terraform Module_
 
 [![Terraform](https://github.com/Snowflake-Labs/terraform-snowflake-aws-geff/actions/workflows/terraform.yml/badge.svg?branch=main)](https://github.com/Snowflake-Labs/terraform-snowflake-aws-geff/actions/workflows/terraform.yml)
 
