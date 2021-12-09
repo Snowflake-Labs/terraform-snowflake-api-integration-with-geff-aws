@@ -22,8 +22,8 @@ resource "aws_lambda_function" "geff_lambda" {
   }
 
   depends_on = [
-    aws_s3_bucket.geff_bucket,
-    aws_s3_bucket_object.geff_meta_folder,
+    module.gsif.geff_bucket,
+    module.gsif.geff_meta_folder,
     aws_cloudwatch_log_group.geff_lambda_log_group,
   ]
 }
