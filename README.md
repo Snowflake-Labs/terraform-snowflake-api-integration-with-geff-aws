@@ -1,4 +1,4 @@
-# GEFF Terraform Module
+# _GEFF Terraform Module_
 
 [![Terraform](https://github.com/Snowflake-Labs/terraform-snowflake-aws-geff/actions/workflows/terraform.yml/badge.svg?branch=main)](https://github.com/Snowflake-Labs/terraform-snowflake-aws-geff/actions/workflows/terraform.yml)
 
@@ -30,7 +30,7 @@ Specifically, it helps you create the following AWS and Snowflake resources:
 # Clone repo
 git clone git@github.com:Snowflake-Labs/geff.git
 
-# Run ecr.sh
+# Run ecr.sh, NOTE: This steps needs Docker Desktop to be running.
 ./ecr.sh 123556660 us-west-2
 ```
 
