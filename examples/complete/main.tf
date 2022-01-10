@@ -19,4 +19,8 @@ module "geff" {
   geff_image_version               = var.geff_image_version
   data_bucket_arns                 = var.data_bucket_arns
   snowflake_integration_user_roles = var.snowflake_integration_user_roles
+
+  providers = {
+    aws.region_specific = aws
+  }
 }
