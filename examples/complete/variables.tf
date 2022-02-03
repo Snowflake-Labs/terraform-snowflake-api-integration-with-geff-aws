@@ -5,10 +5,16 @@ variable "snowflake_account" {
 }
 
 # Optional
-variable "snowflake_integration_owner_role" {
+variable "snowflake_api_integration_owner_role" {
   type    = string
   default = "ACCOUNTADMIN"
 }
+
+variable "snowflake_storage_integration_owner_role" {
+  type    = string
+  default = "ACCOUNTADMIN"
+}
+
 
 variable "snowflake_integration_user_roles" {
   type        = list(string)

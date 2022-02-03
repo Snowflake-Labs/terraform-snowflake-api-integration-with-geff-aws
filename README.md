@@ -1,4 +1,4 @@
-# GEFF Terraform Module
+# _GEFF Terraform Module_
 
 [![Terraform](https://github.com/Snowflake-Labs/terraform-snowflake-aws-geff/actions/workflows/terraform.yml/badge.svg?branch=main)](https://github.com/Snowflake-Labs/terraform-snowflake-aws-geff/actions/workflows/terraform.yml)
 
@@ -20,7 +20,7 @@ Specifically, it helps you create the following AWS and Snowflake resources:
 1. **Snowflake API Integration** to power External Functions
 1. **Snowflake Storage Integration** to power Snowpipes
 
-![image](https://user-images.githubusercontent.com/72515998/125895344-dfb554a3-d574-4b4c-a8bb-e89cc9a20e10.png)
+![image](https://user-images.githubusercontent.com/72515998/152284592-25cad6f5-14cc-4ced-acaa-6c14f47a20a7.png)
 
 ## Setup Instructions
 
@@ -30,7 +30,7 @@ Specifically, it helps you create the following AWS and Snowflake resources:
 # Clone repo
 git clone git@github.com:Snowflake-Labs/geff.git
 
-# Run ecr.sh
+# Run ecr.sh, NOTE: This steps needs Docker Desktop to be running.
 ./ecr.sh 123556660 us-west-2
 ```
 
