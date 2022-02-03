@@ -3,7 +3,6 @@ locals {
   runtime                   = "python3.8"
 }
 
-
 resource "aws_lambda_function" "geff_lambda" {
   function_name = local.lambda_function_name
   role          = aws_iam_role.geff_lambda_assume_role.arn
@@ -22,8 +21,8 @@ resource "aws_lambda_function" "geff_lambda" {
   }
 
   depends_on = [
-    module.gsif.geff_bucket,
-    module.gsif.geff_meta_folder,
+    module.storage_integration.geff_bucket,
+    module.storage_integration.geff_meta_folder,
     aws_cloudwatch_log_group.geff_lambda_log_group,
   ]
 }

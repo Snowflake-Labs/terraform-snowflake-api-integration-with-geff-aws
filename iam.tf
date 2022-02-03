@@ -1,8 +1,7 @@
 # This file contains the following IAM resources:
 # 1. Role  and Policy attachment for the role that the api gateway will assume.
 # 2. Role, Role Policy and Policy attachment for the role that the external function will assume.
-# 3. Role, Role Policy for Storage Integration
-# 4. Lambda Assume Role, Assume Role Policy and other Permissions Policy.
+# 3. Lambda Assume Role, Assume Role Policy and other Permissions Policy.
 
 # ----------------------------------------------------------------------------
 # 1. Role and Policy attachment for the role that the api gateway will assume.
@@ -60,7 +59,7 @@ resource "aws_iam_role" "gateway_caller" {
 }
 
 resource "aws_iam_role_policy" "gateway_caller_policy" {
-  name = "${var.prefix}_invoke_api_gateway_policy"
+  name = "${local.geff_prefix}_invoke_api_gateway_policy"
   role = aws_iam_role.gateway_caller.id
 
   policy = jsonencode({
@@ -75,10 +74,8 @@ resource "aws_iam_role_policy" "gateway_caller_policy" {
   })
 }
 
-
-
 # -----------------------------------------------------------------------
-# 4. Lambda Assume Role, Assume Role Policy and other Permissions Policy.
+# 3. Lambda Assume Role, Assume Role Policy and other Permissions Policy.
 # -----------------------------------------------------------------------
 data "aws_iam_policy_document" "geff_lambda_assume_role_policy_doc" {
   statement {
@@ -148,7 +145,7 @@ data "aws_iam_policy_document" "geff_lambda_policy_doc" {
   statement {
     sid       = "WriteToS3"
     effect    = "Allow"
-    resources = ["${module.gsif.bucket_arn}/*"]
+    resources = ["${module.storage_integration.bucket_arn}/*"]
     actions = [
       "s3:PutObject",
       "s3:GetObject",
