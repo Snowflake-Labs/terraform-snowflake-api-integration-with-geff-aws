@@ -4,20 +4,19 @@ variable "snowflake_account" {
   sensitive = true
 }
 
-# Optional Variables
-variable "aws_region" {
-  description = "The AWS region in which the AWS infrastructure is created."
-  type        = string
-  default     = "us-west-2"
-}
-
 variable "prefix" {
   type        = string
   description = <<EOT
     This will be the prefix used to name the Resources.
     WARNING: Enter a short prefix in order to prevent name length related restrictions
   EOT
-  default     = "example"
+}
+
+# Optional Variables
+variable "aws_region" {
+  description = "The AWS region in which the AWS infrastructure is created."
+  type        = string
+  default     = "us-west-2"
 }
 
 variable "aws_cloudwatch_metric_namespace" {
@@ -102,14 +101,11 @@ locals {
 
 locals {
   inferred_api_gw_invoke_url = "https://${aws_api_gateway_rest_api.ef_to_lambda.id}.execute-api.${local.aws_region}.amazonaws.com/"
-  geff_prefix                = "${var.prefix}_geff"
+  geff_prefix                = "${var.prefix}-geff"
 }
 
 locals {
-  lambda_function_name    = "${local.geff_prefix}_lambda"
-  api_gw_caller_role_name = "${local.geff_prefix}_api_gateway_caller"
-  api_gw_logger_role_name = "${local.geff_prefix}_api_gateway_logger"
-  s3_reader_role_name     = "${local.geff_prefix}_s3_reader"
-  s3_sns_policy_name      = "${local.geff_prefix}_s3_sns_topic_policy"
-  s3_sns_topic_name       = "${local.geff_prefix}_bucket_sns"
+  lambda_function_name    = "${local.geff_prefix}-lambda"
+  api_gw_caller_role_name = "${local.geff_prefix}-api-gateway-caller"
+  api_gw_logger_role_name = "${local.geff_prefix}-api-gateway-logger"
 }

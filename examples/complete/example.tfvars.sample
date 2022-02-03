@@ -1,17 +1,13 @@
-# Dont enter secrets into this file. Copy this file as example.tfvars and then add relavent config variables.
-
 # Required Variables
 snowflake_account = "snowflake_account_id"
-
-# Required Variables
-snowflake_account = "my_account"
+prefix            = "my-test"
 
 # Optional Variables
-snowflake_integration_owner_role = "ACCOUNTADMIN"
-snowflake_integration_user_roles = ["my_integration_user_rl"]
-aws_region                       = "us-west-2"
-prefix                           = "my-test"
-env                              = "dev"
+snowflake_api_integration_owner_role     = "API_INTEGRATION_OWNER_RL"
+snowflake_storage_integration_owner_role = "STORAGE_INTEGRATION_OWNER_RL"
+snowflake_integration_user_roles         = ["INTEGRATION_USER_RL"]
+aws_region                               = "us-west-2"
+env                                      = "dev"
 
 # Network variables
-data_bucket_arns = ["arn:aws:s3:::myteam-test-bucket"]
+data_bucket_arns = ["arn:aws:s3:::prasanth-test-bucket"]

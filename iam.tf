@@ -60,7 +60,7 @@ resource "aws_iam_role" "gateway_caller" {
 }
 
 resource "aws_iam_role_policy" "gateway_caller_policy" {
-  name = "${var.prefix}_invoke_api_gateway_policy"
+  name = "${local.geff_prefix}_invoke_api_gateway_policy"
   role = aws_iam_role.gateway_caller.id
 
   policy = jsonencode({
@@ -148,7 +148,7 @@ data "aws_iam_policy_document" "geff_lambda_policy_doc" {
   statement {
     sid       = "WriteToS3"
     effect    = "Allow"
-    resources = ["${module.gsif.bucket_arn}/*"]
+    resources = ["${module.storage_integration.bucket_arn}/*"]
     actions = [
       "s3:PutObject",
       "s3:GetObject",
