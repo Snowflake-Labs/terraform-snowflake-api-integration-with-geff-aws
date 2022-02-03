@@ -3,7 +3,6 @@ locals {
   runtime                   = "python3.8"
 }
 
-
 resource "aws_lambda_function" "geff_lambda" {
   function_name = local.lambda_function_name
   role          = aws_iam_role.geff_lambda_assume_role.arn
