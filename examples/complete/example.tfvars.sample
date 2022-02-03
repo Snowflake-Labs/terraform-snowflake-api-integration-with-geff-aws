@@ -3,17 +3,15 @@
 # Required Variables
 snowflake_account = "snowflake_account_id"
 
+# Required Variables
+snowflake_account = "my_account"
+
 # Optional Variables
 snowflake_integration_owner_role = "ACCOUNTADMIN"
+snowflake_integration_user_roles = ["my_integration_user_rl"]
 aws_region                       = "us-west-2"
-prefix                           = "my_team"
-env                              = "dev" # prod or test or staging
+prefix                           = "my-test"
+env                              = "dev"
 
 # Network variables
-deploy_lambda_in_vpc      = false
-lambda_security_group_ids = []
-lambda_subnet_ids         = []
-geff_image_version        = "latest"
-
-data_bucket_arns                 = ["arn:aws:s3:::data-bucket-1", "arn:aws:s3:::data-bucket-2"]
-snowflake_integration_user_roles = ["DATA_INGEST_RL"]
+data_bucket_arns = ["arn:aws:s3:::myteam-test-bucket"]
