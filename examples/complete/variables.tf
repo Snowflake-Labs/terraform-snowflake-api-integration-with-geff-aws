@@ -20,7 +20,6 @@ variable "snowflake_storage_integration_owner_role" {
   default = "ACCOUNTADMIN"
 }
 
-
 variable "snowflake_integration_user_roles" {
   type        = list(string)
   default     = []

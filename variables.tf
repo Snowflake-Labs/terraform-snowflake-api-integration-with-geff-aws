@@ -1,9 +1,4 @@
 # Required Variables
-variable "snowflake_account" {
-  type      = string
-  sensitive = true
-}
-
 variable "prefix" {
   type        = string
   description = <<EOT
@@ -34,16 +29,6 @@ variable "env" {
   type        = string
   description = "Dev/Prod/Staging or any other custom environment name."
   default     = "dev"
-}
-
-variable "snowflake_api_integration_owner_role" {
-  type    = string
-  default = "ACCOUNTADMIN"
-}
-
-variable "snowflake_storage_integration_owner_role" {
-  type    = string
-  default = "ACCOUNTADMIN"
 }
 
 variable "snowflake_integration_user_roles" {

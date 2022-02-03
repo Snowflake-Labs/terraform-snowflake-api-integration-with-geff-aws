@@ -2,7 +2,12 @@ module "storage_integration" {
   source  = "Snowflake-Labs/storage-integration/snowflake"
   version = "1.0.0"
 
-  snowflake_account                = var.snowflake_account
+  # General
+  prefix = var.prefix
+  env    = var.env
+
+  # AWS
+  data_bucket_arns                 = var.data_bucket_arns
   snowflake_integration_user_roles = var.snowflake_integration_user_roles
 
   providers = {
