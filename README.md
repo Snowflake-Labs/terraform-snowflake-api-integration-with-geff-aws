@@ -20,7 +20,7 @@ Specifically, it helps you create the following AWS and Snowflake resources:
 1. **Snowflake API Integration** to power External Functions
 1. **Snowflake Storage Integration** to power Snowpipes
 
-![image](https://user-images.githubusercontent.com/72515998/152283918-2a6724e9-6203-4fc1-bcc1-5def8065cbe2.png)
+![image](https://user-images.githubusercontent.com/72515998/152284592-25cad6f5-14cc-4ced-acaa-6c14f47a20a7.png)
 
 ## Setup Instructions
 
