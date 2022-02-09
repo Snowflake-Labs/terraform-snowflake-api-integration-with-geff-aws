@@ -9,8 +9,8 @@ resource "aws_lambda_function" "geff_lambda" {
 
   memory_size = "4096" # 4 GB
 
-  # Here snowflake (client) timeout is 10 mins, lambda (server) timeout is 3s
-  timeout = "3" # Default
+  # Here snowflake (client) timeout is 10 mins, lambda (server) timeout is 15 mins to not conflict with client timeout
+  timeout = "900"
 
   image_uri    = local.lambda_image_repo_version
   package_type = "Image"
