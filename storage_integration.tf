@@ -1,6 +1,5 @@
 module "storage_integration" {
-  source  = "Snowflake-Labs/storage-integration/snowflake"
-  version = "1.0.0"
+  source = "Snowflake-Labs/storage-integration/snowflake"
 
   # General
   prefix = var.prefix
