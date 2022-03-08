@@ -1,5 +1,5 @@
 resource "aws_api_gateway_rest_api" "ef_to_lambda" {
-  name = "${local.geff_prefix}_api_gateway"
+  name = "${local.geff_prefix}-api-gateway"
 
   endpoint_configuration {
     types = [

@@ -97,9 +97,11 @@ resource "aws_iam_role" "geff_lambda_assume_role" {
 data "aws_iam_policy_document" "geff_lambda_policy_doc" {
   # Write logs to cloudwatch
   statement {
-    sid       = "WriteCloudWatchLogs"
-    effect    = "Allow"
-    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${local.lambda_function_name}:*"]
+    sid    = "WriteCloudWatchLogs"
+    effect = "Allow"
+    resources = [
+      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${local.lambda_function_name}:*"
+    ]
 
     actions = [
       "logs:CreateLogStream",
@@ -175,7 +177,7 @@ data "aws_iam_policy_document" "geff_lambda_policy_doc" {
 }
 
 resource "aws_iam_role_policy" "geff_lambda_policy" {
-  name   = "${local.geff_prefix}_lambda_policy"
+  name   = "${local.geff_prefix}-lambda-policy"
   role   = aws_iam_role.geff_lambda_assume_role.id
   policy = data.aws_iam_policy_document.geff_lambda_policy_doc.json
 }
@@ -188,7 +190,7 @@ data "aws_iam_policy" "geff_lambda_vpc_policy" {
 resource "aws_iam_policy_attachment" "geff_lambda_vpc_policy_attachment" {
   count = var.deploy_lambda_in_vpc ? 1 : 0
 
-  name       = "${local.geff_prefix}_lambda_vpc_policy_attachment"
+  name       = "${local.geff_prefix}-lambda-vpc-policy-attachment"
   roles      = [aws_iam_role.geff_lambda_assume_role.name]
   policy_arn = data.aws_iam_policy.geff_lambda_vpc_policy[0].arn
 }
