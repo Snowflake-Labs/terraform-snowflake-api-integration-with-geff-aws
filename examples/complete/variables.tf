@@ -73,6 +73,12 @@ variable "data_bucket_arns" {
   description = "List of Bucket ARNs for the s3_reader role to read from."
 }
 
+variable "geff_secret_arns" {
+  type        = list(string)
+  default     = []
+  description = "GEFF Secrets."
+}
+
 data "aws_caller_identity" "current" {}
 
 locals {

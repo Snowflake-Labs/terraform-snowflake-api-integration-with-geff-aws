@@ -174,6 +174,28 @@ data "aws_iam_policy_document" "geff_lambda_policy_doc" {
       "lambda:InvokeFunction"
     ]
   }
+
+  # Access to secrets needed by lambda
+  statement {
+    sid       = "AccessSecrets"
+    effect    = "Allow"
+    resources = var.geff_secret_arns
+    actions = [
+      "secretsmanager:GetResourcePolicy",
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:ListSecretVersionIds",
+      "secretsmanager:ListSecrets"
+    ]
+  }
+
+  # Access to secrets needed by lambda
+  statement {
+    sid       = "ListSecrets"
+    effect    = "Allow"
+    resources = ["*"]
+    actions   = ["secretsmanager:ListSecrets"]
+  }
 }
 
 resource "aws_iam_role_policy" "geff_lambda_policy" {
