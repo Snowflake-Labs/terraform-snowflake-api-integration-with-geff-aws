@@ -56,24 +56,24 @@ terraform apply "geff.plan"
 #### Use in terraform code
 
 ```terraform
-module "geff" {
-  source  = "Snowflake-Labs/aws-geff/snowflake"
-  version = "2.x.x"
+module "api_integration_with_geff" {
+  source = "Snowflake-Labs/api-integration-with-geff/snowflake"
+  version = "2.0.0"
 
-  # General
+  # Required
   prefix = var.prefix
   env    = var.env
 
-  # AWS
-  aws_cloudwatch_metric_namespace = var.aws_cloudwatch_metric_namespace
-  aws_region                      = var.aws_region
-  deploy_lambda_in_vpc            = var.deploy_lambda_in_vpc
-  lambda_security_group_ids       = var.lambda_security_group_ids
-  lambda_subnet_ids               = var.lambda_subnet_ids
-
-  geff_image_version               = var.geff_image_version
-  data_bucket_arns                 = var.data_bucket_arns
+  # Snowflake
   snowflake_integration_user_roles = var.snowflake_integration_user_roles
+
+  # AWS
+  aws_region = local.aws_region
+
+  # Other config items
+  geff_image_version = var.geff_image_version
+  data_bucket_arns   = var.data_bucket_arns
+  geff_secret_arns   = local.snowalert_secret_arns
 
   providers = {
     snowflake.api_integration     = snowflake.api_integration
@@ -81,7 +81,6 @@ module "geff" {
     aws                           = aws
   }
 }
-
 ```
 
 ## Usage in Snowflake
