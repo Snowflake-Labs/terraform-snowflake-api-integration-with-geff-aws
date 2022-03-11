@@ -59,7 +59,7 @@ resource "aws_iam_role" "gateway_caller" {
 }
 
 resource "aws_iam_role_policy" "gateway_caller_policy" {
-  name = "${local.geff_prefix}_invoke_api_gateway_policy"
+  name = "${local.geff_prefix}-invoke-api-gateway-policy"
   role = aws_iam_role.gateway_caller.id
 
   policy = jsonencode({
@@ -90,7 +90,7 @@ data "aws_iam_policy_document" "geff_lambda_assume_role_policy_doc" {
 }
 
 resource "aws_iam_role" "geff_lambda_assume_role" {
-  name               = "${local.geff_prefix}_lambda"
+  name               = "${local.geff_prefix}-lambda"
   assume_role_policy = data.aws_iam_policy_document.geff_lambda_assume_role_policy_doc.json
 }
 
