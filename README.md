@@ -1,4 +1,4 @@
-# _GEFF Terraform Module_
+# _API Integration with GEFF Backend_
 
 [![Terraform](https://github.com/Snowflake-Labs/terraform-snowflake-aws-geff/actions/workflows/terraform.yml/badge.svg?branch=main)](https://github.com/Snowflake-Labs/terraform-snowflake-aws-geff/actions/workflows/terraform.yml)
 
