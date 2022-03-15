@@ -1,5 +1,5 @@
 resource "snowflake_api_integration" "geff_api_integration" {
-  provider = snowflake.api_integration
+  provider = snowflake.api_integration_role
 
   name                 = "${upper(replace(var.prefix, "-", "_"))}_API_INTEGRATION"
   enabled              = true
@@ -9,7 +9,7 @@ resource "snowflake_api_integration" "geff_api_integration" {
 }
 
 resource "snowflake_integration_grant" "geff_api_integration_grant" {
-  provider = snowflake.api_integration
+  provider = snowflake.api_integration_role
 
   integration_name  = snowflake_api_integration.geff_api_integration.name
   privilege         = "USAGE"

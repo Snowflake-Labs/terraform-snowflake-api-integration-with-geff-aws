@@ -155,16 +155,6 @@ data "aws_iam_policy_document" "geff_lambda_policy_doc" {
     ]
   }
 
-  # Decrypt with KMS
-  statement {
-    sid       = "DecryptWithKMS"
-    effect    = "Allow"
-    resources = [aws_kms_key.prod.arn]
-    actions = [
-      "kms:Decrypt"
-    ]
-  }
-
   # Invoke a child lambda
   statement {
     sid       = "InvokeLambda"

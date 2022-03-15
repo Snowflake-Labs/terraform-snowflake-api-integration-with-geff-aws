@@ -12,8 +12,8 @@ terraform {
       version = "0.25.36"
 
       configuration_aliases = [
-        snowflake.api_integration,
-        snowflake.storage_integration
+        snowflake.api_integration_role,
+        snowflake.storage_integration_role,
       ]
     }
   }
