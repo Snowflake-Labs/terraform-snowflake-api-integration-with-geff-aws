@@ -15,10 +15,11 @@ module "geff" {
   geff_image_version               = var.geff_image_version
   data_bucket_arns                 = var.data_bucket_arns
   snowflake_integration_user_roles = var.snowflake_integration_user_roles
+  geff_secret_arns                 = var.geff_secret_arns
 
   providers = {
-    snowflake.api_integration     = snowflake.api_integration
-    snowflake.storage_integration = snowflake.storage_integration
-    aws                           = aws
+    snowflake.api_integration_role     = snowflake.api_integration_role
+    snowflake.storage_integration_role = snowflake.storage_integration_role
+    aws                                = aws
   }
 }
