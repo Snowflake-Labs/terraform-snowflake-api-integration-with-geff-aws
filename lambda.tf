@@ -1,6 +1,7 @@
 locals {
   source_code_repo_dir_path = "geff"
   runtime                   = "python3.8"
+  lambda_sg_ids             = length(var.lambda_security_group_ids) == 0 ? [aws_security_group.geff_lambda_sg.id] : var.lambda_security_group_ids
 }
 
 resource "aws_lambda_function" "geff_lambda" {
@@ -16,7 +17,7 @@ resource "aws_lambda_function" "geff_lambda" {
   package_type = "Image"
 
   vpc_config {
-    security_group_ids = var.deploy_lambda_in_vpc ? var.lambda_security_group_ids : []
+    security_group_ids = var.deploy_lambda_in_vpc ? local.lambda_sg_ids : []
     subnet_ids         = var.deploy_lambda_in_vpc ? var.lambda_subnet_ids : []
   }
 

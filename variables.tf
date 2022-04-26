@@ -42,7 +42,7 @@ variable "deploy_lambda_in_vpc" {
 
 variable "lambda_security_group_ids" {
   type        = list(string)
-  default     = []
+  default     = null
   description = "The security group IDs for the lambda function."
 }
 
