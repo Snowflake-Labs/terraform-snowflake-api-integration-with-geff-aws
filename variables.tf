@@ -52,6 +52,12 @@ variable "lambda_subnet_ids" {
   description = "The subnet IDs for the lambda function."
 }
 
+variable "vpc_id" {
+  type        = string
+  description = "The VPC ID for creating the lambda and security group ID."
+  default     = null
+}
+
 variable "geff_image_version" {
   type        = string
   description = "Version of the GEFF docker image."
