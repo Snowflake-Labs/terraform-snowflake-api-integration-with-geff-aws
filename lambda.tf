@@ -1,7 +1,7 @@
 locals {
   source_code_repo_dir_path = "geff"
   runtime                   = "python3.8"
-  lambda_sg_ids             = length(var.lambda_security_group_ids) == 0 ? [aws_security_group.geff_lambda_sg.id] : var.lambda_security_group_ids
+  lambda_sg_ids             = length(var.lambda_security_group_ids) == 0 ? [aws_security_group.geff_lambda_sg.0.id] : var.lambda_security_group_ids
 }
 
 resource "aws_lambda_function" "geff_lambda" {
