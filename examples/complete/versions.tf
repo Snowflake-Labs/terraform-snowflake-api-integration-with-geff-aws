@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.0.10"
+  required_version = ">= 1.1.7"
 
   required_providers {
     aws = {
@@ -9,7 +9,7 @@ terraform {
 
     snowflake = {
       source  = "chanzuckerberg/snowflake"
-      version = "0.25.36"
+      version = "0.32.0"
     }
   }
 }
