@@ -25,5 +25,5 @@ output "sns_topic_arn" {
 
 output "geff_lambda_sg_ids" {
   description = "Lambda SG IDs."
-  value       = length(var.lambda_security_group_ids) == 0 ? var.lambda_security_group_ids : [aws_security_group.geff_lambda_sg.0.id]
+  value       = length(var.lambda_security_group_ids) == 0 ? [aws_security_group.geff_lambda_sg.0.id] : var.lambda_security_group_ids
 }
