@@ -42,7 +42,7 @@ variable "deploy_lambda_in_vpc" {
 
 variable "lambda_security_group_ids" {
   type        = list(string)
-  default     = null
+  default     = []
   description = "The security group IDs for the lambda function."
 }
 
@@ -50,6 +50,12 @@ variable "lambda_subnet_ids" {
   type        = list(string)
   default     = []
   description = "The subnet IDs for the lambda function."
+}
+
+variable "vpc_id" {
+  type        = string
+  description = "The VPC ID for creating the lambda and security group ID."
+  default     = null
 }
 
 variable "geff_image_version" {
