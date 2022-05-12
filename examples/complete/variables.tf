@@ -88,13 +88,13 @@ variable "geff_secret_arns" {
 variable "geff_dsn" {
   type        = string
   description = "GEFF project Sentry DSN."
-  default     = null
+  default     = ""
 }
 
 variable "sentry_driver_dsn" {
   type        = string
   description = "Snowflake errors project Sentry DSN."
-  default     = null
+  default     = ""
 }
 
 data "aws_caller_identity" "current" {}
