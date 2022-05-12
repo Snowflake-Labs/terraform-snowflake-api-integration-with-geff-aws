@@ -57,8 +57,7 @@ terraform apply "geff.plan"
 
 ```terraform
 module "api_integration_with_geff" {
-  source = "Snowflake-Labs/api-integration-with-geff/snowflake"
-  version = "2.0.0"
+  source = "Snowflake-Labs/api-integration-with-geff-aws/snowflake"
 
   # Required
   prefix = var.prefix
