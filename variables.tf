@@ -76,6 +76,18 @@ variable "geff_secret_arns" {
   description = "GEFF Secrets."
 }
 
+variable "geff_dsn" {
+  type        = string
+  description = "GEFF project Sentry DSN."
+  default     = null
+}
+
+variable "sentry_driver_dsn" {
+  type        = string
+  description = "Snowflake errors project Sentry DSN."
+  default     = null
+}
+
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 data "aws_partition" "current" {}

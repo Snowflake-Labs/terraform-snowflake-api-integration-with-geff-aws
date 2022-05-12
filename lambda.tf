@@ -21,6 +21,13 @@ resource "aws_lambda_function" "geff_lambda" {
     subnet_ids         = var.deploy_lambda_in_vpc ? var.lambda_subnet_ids : []
   }
 
+  environment {
+    variables = {
+      GEFF_DSN          = var.geff_dsn
+      SENTRY_DRIVER_DSN = var.sentry_driver_dsn
+    }
+  }
+
   depends_on = [
     module.storage_integration.geff_bucket,
     module.storage_integration.geff_meta_folder,
