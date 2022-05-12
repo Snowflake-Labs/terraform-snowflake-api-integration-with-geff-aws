@@ -76,12 +76,6 @@ variable "geff_secret_arns" {
   description = "GEFF Secrets."
 }
 
-variable "geff_image_version" {
-  type        = string
-  description = "Version of the GEFF docker image."
-  default     = null
-}
-
 variable "geff_dsn" {
   type        = string
   description = "GEFF project Sentry DSN."
