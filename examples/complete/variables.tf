@@ -97,6 +97,12 @@ variable "sentry_driver_dsn" {
   default     = ""
 }
 
+variable "allowed_sg_ids" {
+  type        = list(string)
+  description = "Allow traffic from lambda to internal/VPC private security groups."
+  default     = []
+}
+
 data "aws_caller_identity" "current" {}
 
 locals {
