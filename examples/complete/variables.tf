@@ -81,7 +81,7 @@ variable "data_bucket_arns" {
 
 variable "geff_secret_arns" {
   type        = list(string)
-  default     = []
+  default     = ["*"]
   description = "GEFF Secrets."
 }
 
