@@ -1,5 +1,5 @@
 resource "aws_security_group" "geff_lambda_sg" {
-  count = length(var.lambda_security_group_ids) == 0 ? 1 : 0
+  count = var.deploy_lambda_in_vpc && length(var.lambda_security_group_ids) == 0 ? 1 : 0
 
   name        = "${local.geff_prefix}-lambda-sg"
   description = "Create security group for lambda if not provided."
@@ -7,7 +7,7 @@ resource "aws_security_group" "geff_lambda_sg" {
 }
 
 resource "aws_security_group_rule" "geff_lambda_sg_egress_rule" {
-  count = length(var.lambda_security_group_ids) == 0 ? 1 : 0
+  count = var.deploy_lambda_in_vpc && length(var.lambda_security_group_ids) == 0 ? 1 : 0
 
   type        = "egress"
   to_port     = 0
