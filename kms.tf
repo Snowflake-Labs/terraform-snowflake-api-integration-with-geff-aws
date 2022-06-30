@@ -9,7 +9,7 @@ resource "aws_kms_key" "prod" {
           Action = "kms:*"
           Effect = "Allow"
           Principal = {
-            AWS = "arn:aws:iam::${local.account_id}:root"
+            AWS = "arn:${var.arn_format}:iam::${local.account_id}:root"
           }
           Resource = "*"
           Sid      = "Enable IAM User Permissions"
