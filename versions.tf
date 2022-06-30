@@ -8,8 +8,8 @@ terraform {
     }
 
     snowflake = {
-      source  = "chanzuckerberg/snowflake"
-      version = "0.32.0"
+      source  = "Snowflake-Labs/snowflake"
+      version = "0.37.0"
 
       configuration_aliases = [
         snowflake.api_integration_role,
