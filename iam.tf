@@ -25,7 +25,7 @@ resource "aws_iam_role" "geff_api_gateway_assume_role" {
 
 resource "aws_iam_role_policy_attachment" "gateway_logger_policy_attachment" {
   role       = aws_iam_role.geff_api_gateway_assume_role.id
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+  policy_arn = "arn:${var.arn_format}:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
 }
 
 resource "aws_api_gateway_account" "api_gateway" {
@@ -100,7 +100,7 @@ data "aws_iam_policy_document" "geff_lambda_policy_doc" {
     sid    = "WriteCloudWatchLogs"
     effect = "Allow"
     resources = [
-      "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${local.lambda_function_name}:*"
+      "arn:${var.arn_format}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${local.lambda_function_name}:*"
     ]
 
     actions = [
@@ -196,7 +196,7 @@ resource "aws_iam_role_policy" "geff_lambda_policy" {
 
 data "aws_iam_policy" "geff_lambda_vpc_policy" {
   count = var.deploy_lambda_in_vpc ? 1 : 0
-  arn   = "arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess"
+  arn   = "arn:${var.arn_format}:iam::aws:policy/service-role/AWSLambdaENIManagementAccess"
 }
 
 resource "aws_iam_policy_attachment" "geff_lambda_vpc_policy_attachment" {
