@@ -189,15 +189,15 @@ data "aws_iam_policy_document" "geff_lambda_policy_doc" {
 
   # Write to DynamoDB table
   statement {
-    sid       = "WriteToDynamoDB"
-    effect    = "Allow"
+    sid    = "WriteToDynamoDB"
+    effect = "Allow"
     resources = [
       "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.geff_requests_table.name}"
     ]
     actions = [
-				"dynamodb:GetItem",
-				"dynamodb:PutItem",
-				"dynamodb:UpdateItem"
+      "dynamodb:GetItem",
+      "dynamodb:PutItem",
+      "dynamodb:UpdateItem"
     ]
   }
 }
