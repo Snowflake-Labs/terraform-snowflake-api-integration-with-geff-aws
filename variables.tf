@@ -88,6 +88,18 @@ variable "sentry_driver_dsn" {
   default     = ""
 }
 
+variable "dynamodb_read_capacity" {
+  type        = number
+  description = "Read capacity for the DynamoDB requests table."
+  default     = 1
+}
+
+variable "dynamodb_write_capacity" {
+  type        = number
+  description = "Write capacity for the DynamoDB requests table."
+  default     = 1
+}
+
 variable "arn_format" {
   type        = string
   description = "ARN format could be aws or aws-us-gov. Defaults to non-gov."
