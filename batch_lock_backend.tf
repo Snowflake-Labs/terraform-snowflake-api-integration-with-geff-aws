@@ -1,9 +1,8 @@
 resource "aws_dynamodb_table" "geff_requests_table" {
-  name           = "geff-requests"
-  billing_mode   = "PROVISIONED"
-  read_capacity  = 1
-  write_capacity = 1
-  hash_key       = "batch_id"
+  count        = var.request_locking_with_dynamodb ? 1 : 0
+  name         = "geff-request-locking"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "batch_id"
 
   attribute {
     name = "batch_id"
@@ -12,7 +11,7 @@ resource "aws_dynamodb_table" "geff_requests_table" {
 
   ttl {
     attribute_name = "TimeToExist"
-    enabled        = false
+    enabled        = true
   }
 
   tags = {
