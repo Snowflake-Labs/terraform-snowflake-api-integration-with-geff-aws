@@ -88,40 +88,16 @@ variable "sentry_driver_dsn" {
   default     = ""
 }
 
-variable "dynamodb_read_capacity" {
-  type        = number
-  description = "Read capacity for the DynamoDB requests table."
-  default     = 1
-}
-
-variable "dynamodb_write_capacity" {
-  type        = number
-  description = "Write capacity for the DynamoDB requests table."
-  default     = 1
-}
-
 variable "arn_format" {
   type        = string
   description = "ARN format could be aws or aws-us-gov. Defaults to non-gov."
   default     = "aws"
 }
 
-variable "create_dynamodb_table" {
+variable "request_locking_with_dynamodb" {
   type        = bool
-  description = "Boolean for if a DynamoDB table is to be created for request locking."
-  default     = true
-}
-
-variable "user_managed_dynamodb_table_name" {
-  type        = string
-  description = "Name of the user-managed DynamoDB table."
-  default     = ""
-}
-
-variable "dynamodb_table_ttl" {
-  type        = number
-  description = "TTL for items in the dynamodb table."
-  default     = 86400 # 1 day
+  description = "Boolean"
+  default     = false
 }
 
 data "aws_caller_identity" "current" {}

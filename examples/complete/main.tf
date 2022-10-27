@@ -19,6 +19,7 @@ module "geff" {
   data_bucket_arns                 = var.data_bucket_arns
   snowflake_integration_user_roles = var.snowflake_integration_user_roles
   geff_secret_arns                 = var.geff_secret_arns
+  request_locking_with_dynamodb    = var.request_locking_with_dynamodb
 
   create_dynamodb_table            = var.create_dynamodb_table
   user_managed_dynamodb_table_name = var.user_managed_dynamodb_table_name
