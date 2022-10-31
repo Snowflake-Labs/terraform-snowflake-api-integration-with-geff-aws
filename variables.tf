@@ -94,10 +94,22 @@ variable "arn_format" {
   default     = "aws"
 }
 
-variable "request_locking_with_dynamodb" {
+variable "use_custom_dynamodb_table" {
   type        = bool
-  description = "Boolean"
+  description = "Boolean for when a user-created custom DynamoDB table is to be used"
   default     = false
+}
+
+variable "dynamodb_table_name" {
+  type        = string
+  description = "Either the name of the user-created table, or a custom name for the default table"
+  default     = "geff-request-locking"
+}
+
+variable "custom_dynamodb_table_arn" {
+  type        = string
+  description = "ARN of the user-created custom DynamoDB table"
+  default     = ""
 }
 
 data "aws_caller_identity" "current" {}
