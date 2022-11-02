@@ -221,7 +221,7 @@ resource "aws_iam_policy" "dynamodb_table_policy" {
           "dynamodb:PutItem"
         ]
         Effect   = "Allow"
-        Resource = var.custom_dynamodb_table_arn != "" ? var.custom_dynamodb_table_arn : "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.geff_request_locking_table[0].name}"
+        Resource = local.dynamodb_table_arn
       }
     ]
   })
