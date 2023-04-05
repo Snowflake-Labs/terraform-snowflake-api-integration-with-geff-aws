@@ -25,6 +25,7 @@ resource "aws_lambda_function" "geff_lambda" {
     variables = {
       GEFF_DSN          = var.geff_dsn
       SENTRY_DRIVER_DSN = var.sentry_driver_dsn
+      ENV               = var.env
     }
   }
 
