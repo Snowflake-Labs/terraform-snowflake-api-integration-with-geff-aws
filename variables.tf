@@ -109,6 +109,7 @@ variable "user_managed_dynamodb_table_name" {
 variable "dynamodb_table_ttl" {
   type        = number
   description = "TTL for items in the dynamodb table."
+  default     = 86400 # 1 day
 }
 
 data "aws_caller_identity" "current" {}
