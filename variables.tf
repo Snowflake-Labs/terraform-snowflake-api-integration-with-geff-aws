@@ -88,11 +88,6 @@ variable "sentry_driver_dsn" {
   default     = ""
 }
 
-variable "dynamodb_table_ttl" {
-  type        = number
-  description = "TTL for items in the dynamodb table."
-}
-
 variable "arn_format" {
   type        = string
   description = "ARN format could be aws or aws-us-gov. Defaults to non-gov."
@@ -109,6 +104,11 @@ variable "user_managed_dynamodb_table_name" {
   type        = string
   description = "Name of the user-managed DynamoDB table."
   default     = ""
+}
+
+variable "dynamodb_table_ttl" {
+  type        = number
+  description = "TTL for items in the dynamodb table."
 }
 
 data "aws_caller_identity" "current" {}
