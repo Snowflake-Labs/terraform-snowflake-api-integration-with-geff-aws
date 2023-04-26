@@ -139,4 +139,3 @@ locals {
   api_gw_caller_role_name = "${local.geff_prefix}-api-gateway-caller"
   api_gw_logger_role_name = "${local.geff_prefix}-api-gateway-logger"
 }
-
