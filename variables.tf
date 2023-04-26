@@ -88,6 +88,11 @@ variable "sentry_driver_dsn" {
   default     = ""
 }
 
+variable "dynamodb_table_ttl" {
+  type        = number
+  description = "TTL for items in the dynamodb table."
+}
+
 variable "arn_format" {
   type        = string
   description = "ARN format could be aws or aws-us-gov. Defaults to non-gov."
