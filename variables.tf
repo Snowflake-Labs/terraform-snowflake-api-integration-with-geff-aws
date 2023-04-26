@@ -103,7 +103,7 @@ variable "create_dynamodb_table" {
 variable "user_managed_dynamodb_table_name" {
   type        = string
   description = "Name of the user-managed DynamoDB table."
-  default     = ""
+  default     = null
 }
 
 variable "dynamodb_table_ttl" {

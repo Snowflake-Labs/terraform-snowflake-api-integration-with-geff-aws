@@ -111,8 +111,14 @@ variable "create_dynamodb_table" {
 
 variable "user_managed_dynamodb_table_name" {
   type        = string
-  description = "Name of the user-managed custom DynamoDB table."
-  default     = ""
+  description = "Name of the user-managed DynamoDB table."
+  default     = null
+}
+
+variable "dynamodb_table_ttl" {
+  type        = number
+  description = "TTL for items in the dynamodb table."
+  default     = 86400 # 1 day
 }
 
 data "aws_caller_identity" "current" {}
