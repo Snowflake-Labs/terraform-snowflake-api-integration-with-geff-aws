@@ -97,7 +97,7 @@ variable "arn_format" {
 variable "create_dynamodb_table" {
   type        = bool
   description = "Boolean for if a DynamoDB table is to be created for batch locking."
-  default     = true
+  default     = false
 }
 
 variable "user_managed_dynamodb_table_name" {

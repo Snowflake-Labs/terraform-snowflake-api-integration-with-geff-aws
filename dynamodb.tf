@@ -10,7 +10,7 @@ resource "aws_dynamodb_table" "geff_batch_locking_table" {
   }
 
   ttl {
-    attribute_name = "TimeToExist"
+    attribute_name = "ttl"
     enabled        = true
   }
 
