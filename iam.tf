@@ -208,7 +208,7 @@ resource "aws_iam_policy_attachment" "geff_lambda_vpc_policy_attachment" {
 }
 
 # -----------------------------------------------------------------------------
-# 4. Policy for the DynamoDB table to be used as a backend for request locking
+# 4. Policy for the DynamoDB table to be used as a backend for batch locking
 # -----------------------------------------------------------------------------
 resource "aws_iam_policy" "dynamodb_table_policy" {
   name = "${local.geff_prefix}-dynamodb-table-policy"

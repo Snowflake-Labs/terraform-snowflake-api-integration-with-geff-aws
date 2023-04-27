@@ -1,6 +1,6 @@
-resource "aws_dynamodb_table" "geff_request_locking_table" {
+resource "aws_dynamodb_table" "geff_batch_locking_table" {
   count        = var.create_dynamodb_table ? 1 : 0
-  name         = "${local.geff_prefix}_request_locking_table"
+  name         = "${local.geff_prefix}_batch_locking_table"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "batch_id"
 
@@ -15,7 +15,7 @@ resource "aws_dynamodb_table" "geff_request_locking_table" {
   }
 
   tags = {
-    name = "${local.geff_prefix}_request_locking_table"
+    name = "${local.geff_prefix}_batch_locking_table"
   }
 }
 
@@ -25,6 +25,6 @@ data "aws_dynamodb_table" "user_managed_table" {
 }
 
 locals {
-  dynamodb_table_name = var.create_dynamodb_table ? aws_dynamodb_table.geff_request_locking_table[0].name : data.aws_dynamodb_table.user_managed_table[0].name
-  dynamodb_table_arn  = var.create_dynamodb_table ? aws_dynamodb_table.geff_request_locking_table[0].arn : data.aws_dynamodb_table.user_managed_table[0].arn
+  dynamodb_table_name = var.create_dynamodb_table ? aws_dynamodb_table.geff_batch_locking_table[0].name : data.aws_dynamodb_table.user_managed_table[0].name
+  dynamodb_table_arn  = var.create_dynamodb_table ? aws_dynamodb_table.geff_batch_locking_table[0].arn : data.aws_dynamodb_table.user_managed_table[0].arn
 }

@@ -105,7 +105,7 @@ variable "arn_format" {
 
 variable "create_dynamodb_table" {
   type        = bool
-  description = "Boolean for if a DynamoDB table is to be created for request locking."
+  description = "Boolean for if a DynamoDB table is to be created for batch locking."
   default     = true
 }
 
