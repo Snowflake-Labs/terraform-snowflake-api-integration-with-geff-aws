@@ -20,11 +20,11 @@ resource "aws_dynamodb_table" "geff_batch_locking_table" {
 }
 
 data "aws_dynamodb_table" "user_managed_table" {
-  count = var.create_dynamodb_table ? 0 : 1
+  count = var.user_managed_dynamodb_table_name != null ? 1 : 0
   name  = var.user_managed_dynamodb_table_name
 }
 
 locals {
-  dynamodb_table_name = var.create_dynamodb_table ? aws_dynamodb_table.geff_batch_locking_table[0].name : data.aws_dynamodb_table.user_managed_table[0].name
-  dynamodb_table_arn  = var.create_dynamodb_table ? aws_dynamodb_table.geff_batch_locking_table[0].arn : data.aws_dynamodb_table.user_managed_table[0].arn
+  dynamodb_table_name = var.user_managed_dynamodb_table_name != null ? data.aws_dynamodb_table.user_managed_table[0].name : (var.create_dynamodb_table ? aws_dynamodb_table.geff_batch_locking_table[0].name : null)
+  dynamodb_table_arn = var.user_managed_dynamodb_table_name != null ? data.aws_dynamodb_table.user_managed_table[0].arn : (var.create_dynamodb_table ? aws_dynamodb_table.geff_batch_locking_table[0].arn : null)
 }

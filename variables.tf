@@ -94,12 +94,6 @@ variable "arn_format" {
   default     = "aws"
 }
 
-variable "batch_locking_enabled" {
-  type        = bool
-  description = "Boolean for if batch locking should be enabled."
-  default     = false
-}
-
 variable "create_dynamodb_table" {
   type        = bool
   description = "Boolean for if a DynamoDB table is to be created for batch locking."
