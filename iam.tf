@@ -211,7 +211,7 @@ resource "aws_iam_policy_attachment" "geff_lambda_vpc_policy_attachment" {
 # 4. Policy for the DynamoDB table to be used as a backend for batch locking
 # -----------------------------------------------------------------------------
 resource "aws_iam_policy" "dynamodb_table_policy" {
-  count = var.create_dynamodb_table || var.user_managed_dynamodb_table_name != null ? 1 : 0
+  count = var.create_dynamodb_table || var.batch_locking_table_name != null ? 1 : 0
 
   name = "${local.geff_prefix}-dynamodb-table-policy"
   policy = jsonencode({
@@ -223,15 +223,15 @@ resource "aws_iam_policy" "dynamodb_table_policy" {
           "dynamodb:PutItem"
         ]
         Effect   = "Allow"
-        Resource = local.dynamodb_table_arn
+        Resource = try(local.dynamodb_table.arn, null)
       }
     ]
   })
 }
 
 resource "aws_iam_role_policy_attachment" "dynamodb_table_policy_attachment" {
-  count = var.create_dynamodb_table || var.user_managed_dynamodb_table_name != null ? 1 : 0
-  
+  count = var.create_dynamodb_table || var.batch_locking_table_name != null ? 1 : 0
+
   role       = aws_iam_role.geff_lambda_assume_role.name
   policy_arn = aws_iam_policy.dynamodb_table_policy[0].arn
 }

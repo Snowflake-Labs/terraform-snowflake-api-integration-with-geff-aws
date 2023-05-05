@@ -97,12 +97,12 @@ variable "arn_format" {
 variable "create_dynamodb_table" {
   type        = bool
   description = "Boolean for if a DynamoDB table is to be created for batch locking."
-  default     = false
+  default     = true
 }
 
-variable "user_managed_dynamodb_table_name" {
+variable "batch_locking_table_name" {
   type        = string
-  description = "Name of the user-managed DynamoDB table."
+  description = "DynamoDB table name for batch-locking, used either for an existing user-created table when 'create_dynamodb_table' is false, or as a table name for the module-created table when 'create_dynamodb_table' is true."
   default     = null
 }
 

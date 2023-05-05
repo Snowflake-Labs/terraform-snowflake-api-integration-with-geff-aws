@@ -21,7 +21,7 @@ module "geff" {
   geff_secret_arns                 = var.geff_secret_arns
 
   create_dynamodb_table            = var.create_dynamodb_table
-  user_managed_dynamodb_table_name = var.user_managed_dynamodb_table_name
+  batch_locking_table_name         = var.batch_locking_table_name
   dynamodb_table_ttl               = var.dynamodb_table_ttl
 
   create_dynamodb_table            = var.create_dynamodb_table
