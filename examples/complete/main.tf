@@ -20,9 +20,9 @@ module "geff" {
   snowflake_integration_user_roles = var.snowflake_integration_user_roles
   geff_secret_arns                 = var.geff_secret_arns
 
-  create_dynamodb_table            = var.create_dynamodb_table
-  batch_locking_table_name         = var.batch_locking_table_name
-  dynamodb_table_ttl               = var.dynamodb_table_ttl
+  create_dynamodb_table    = var.create_dynamodb_table
+  batch_locking_table_name = var.batch_locking_table_name
+  dynamodb_table_ttl       = var.dynamodb_table_ttl
 
   providers = {
     snowflake.api_integration_role     = snowflake.api_integration_role

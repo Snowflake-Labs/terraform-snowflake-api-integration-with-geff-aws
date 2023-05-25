@@ -23,10 +23,10 @@ resource "aws_lambda_function" "geff_lambda" {
 
   environment {
     variables = {
-      GEFF_DSN              = var.geff_dsn
-      SENTRY_DRIVER_DSN     = var.sentry_driver_dsn
-      DYNAMODB_TABLE_NAME   = try(local.dynamodb_table.name, null)
-      DYNAMODB_TABLE_TTL    = var.dynamodb_table_ttl
+      GEFF_DSN            = var.geff_dsn
+      SENTRY_DRIVER_DSN   = var.sentry_driver_dsn
+      DYNAMODB_TABLE_NAME = try(local.dynamodb_table.name, null)
+      DYNAMODB_TABLE_TTL  = var.dynamodb_table_ttl
     }
   }
 

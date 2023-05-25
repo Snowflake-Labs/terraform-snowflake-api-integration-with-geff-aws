@@ -22,7 +22,7 @@ data "aws_dynamodb_table" "user_managed_table" {
 
 locals {
   dynamodb_table = (
-    var.create_dynamodb_table            ? aws_dynamodb_table.geff_batch_locking_table[0]: 
-    var.batch_locking_table_name != null ? data.aws_dynamodb_table.user_managed_table[0]: null
+    var.create_dynamodb_table ? aws_dynamodb_table.geff_batch_locking_table[0] :
+    var.batch_locking_table_name != null ? data.aws_dynamodb_table.user_managed_table[0] : null
   )
 }
