@@ -24,9 +24,6 @@ module "geff" {
   batch_locking_table_name         = var.batch_locking_table_name
   dynamodb_table_ttl               = var.dynamodb_table_ttl
 
-  create_dynamodb_table            = var.create_dynamodb_table
-  user_managed_dynamodb_table_name = var.user_managed_dynamodb_table_name
-
   providers = {
     snowflake.api_integration_role     = snowflake.api_integration_role
     snowflake.storage_integration_role = snowflake.storage_integration_role
