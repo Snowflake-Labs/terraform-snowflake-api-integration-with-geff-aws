@@ -103,6 +103,24 @@ variable "arn_format" {
   default     = "aws"
 }
 
+variable "create_dynamodb_table" {
+  type        = bool
+  description = "Boolean for if a DynamoDB table is to be created for batch locking."
+  default     = true
+}
+
+variable "batch_locking_table_name" {
+  type        = string
+  description = "DynamoDB table name for batch-locking, used either for an existing user-created table when 'create_dynamodb_table' is false, or as a table name for the module-created table when 'create_dynamodb_table' is true."
+  default     = null
+}
+
+variable "dynamodb_table_ttl" {
+  type        = number
+  description = "TTL for items in the dynamodb table."
+  default     = 86400 # 1 day
+}
+
 data "aws_caller_identity" "current" {}
 
 locals {
