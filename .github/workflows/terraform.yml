@@ -20,7 +20,7 @@ jobs:
     - name: Terraform Format
       run: terraform fmt -check -recursive -diff
     - name: Terraform Init
-      run: terraform init
+      run: terraform init -upgrade
       working-directory: examples/complete/
     - name: Terraform Validate
       run: terraform validate -no-color
