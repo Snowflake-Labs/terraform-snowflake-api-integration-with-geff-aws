@@ -25,8 +25,10 @@ resource "aws_lambda_function" "geff_lambda" {
     variables = {
       GEFF_DSN            = var.geff_dsn
       SENTRY_DRIVER_DSN   = var.sentry_driver_dsn
-      DYNAMODB_TABLE_NAME = try(local.dynamodb_table.name, null)
-      DYNAMODB_TABLE_TTL  = var.dynamodb_table_ttl
+      BATCH_LOCKING_TABLE_NAME = try(local.batch_locking_table.name, null)
+      BATCH_LOCKING_TABLE_TTL  = var.batch_locking_table_ttl
+      RATE_LIMITING_TABLE_NAME = try(local.rate_limiting_table.name, null)
+      RATE_LIMITING_TABLE_TTL  = var.rate_limiting_table_ttl
     }
   }
 
