@@ -103,7 +103,7 @@ variable "arn_format" {
   default     = "aws"
 }
 
-variable "create_dynamodb_table" {
+variable "create_batch_locking_table" {
   type        = bool
   description = "Boolean for if a DynamoDB table is to be created for batch locking."
   default     = true
@@ -111,13 +111,31 @@ variable "create_dynamodb_table" {
 
 variable "batch_locking_table_name" {
   type        = string
-  description = "DynamoDB table name for batch-locking, used either for an existing user-created table when 'create_dynamodb_table' is false, or as a table name for the module-created table when 'create_dynamodb_table' is true."
+  description = "DynamoDB table name for batch-locking, used either for an existing user-created table when 'create_batch_locking_table' is false, or as a table name for the module-created table when 'create_batch_locking_table' is true."
   default     = null
 }
 
-variable "dynamodb_table_ttl" {
+variable "batch_locking_table_ttl" {
   type        = number
-  description = "TTL for items in the dynamodb table."
+  description = "TTL for items in the batch locking DynamoDB table."
+  default     = 86400 # 1 day
+}
+
+variable "create_rate_limiting_table" {
+  type        = bool
+  description = "Boolean for if a DynamoDB table is to be created for rate limiting."
+  default     = true
+}
+
+variable "rate_limiting_table_name" {
+  type        = string
+  description = "DynamoDB table name for rate limiting, used either for an existing user-created table when 'create_rate_limiting_table' is false, or as a table name for the module-created table when 'create_rate_limiting_table' is true."
+  default     = null
+}
+
+variable "rate_limiting_table_ttl" {
+  type        = number
+  description = "TTL for items in the rate limiting DynamoDB table."
   default     = 86400 # 1 day
 }
 
