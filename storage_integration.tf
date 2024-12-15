@@ -1,6 +1,7 @@
 module "storage_integration" {
-  source  = "Snowflake-Labs/storage-integration-aws/snowflake"
-  version = "0.2.11"
+  #source  = "Snowflake-Labs/storage-integration-aws/snowflake"
+  #version = "0.2.11"
+  source  = "git::https://github.com/Snowflake-Labs/terraform-snowflake-storage-integration-aws.git?ref=sovereign-cloud-support"
 
   # General
   prefix = var.prefix
