@@ -25,6 +25,5 @@ terraform {
         snowsql.storage_integration_role,
       ]
     }
-
   }
 }
