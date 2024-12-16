@@ -6,7 +6,6 @@ module "geff" {
   env    = var.env
 
   # AWS
-  arn_format                      = var.arn_format
   aws_cloudwatch_metric_namespace = var.aws_cloudwatch_metric_namespace
   aws_region                      = var.aws_region
 
