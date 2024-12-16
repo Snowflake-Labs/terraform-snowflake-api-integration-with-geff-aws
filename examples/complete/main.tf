@@ -27,6 +27,7 @@ module "geff" {
   providers = {
     snowflake.api_integration_role     = snowflake.api_integration_role
     snowflake.storage_integration_role = snowflake.storage_integration_role
+    snowsql.storage_integration_role   = snowsql.storage_integration_role
     aws                                = aws
   }
 }
