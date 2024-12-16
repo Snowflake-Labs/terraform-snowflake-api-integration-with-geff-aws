@@ -120,7 +120,7 @@ locals {
   lambda_image_repo_version = "${local.lambda_image_repo}:${var.geff_image_version}"
   lambda_function_name      = "${local.geff_prefix}-lambda"
 
-  geff_prefix                = "${var.prefix}-geff"
+  geff_prefix = "${var.prefix}-geff"
 
   inferred_api_gw_invoke_url = "https://${aws_api_gateway_rest_api.ef_to_lambda.id}.execute-api.${local.aws_region}.${local.aws_dns_suffix}/"
   api_gw_caller_role_name    = "${local.geff_prefix}-api-gateway-caller"
