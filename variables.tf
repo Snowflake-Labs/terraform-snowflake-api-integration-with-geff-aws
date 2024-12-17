@@ -88,12 +88,6 @@ variable "sentry_driver_dsn" {
   default     = ""
 }
 
-variable "arn_format" {
-  type        = string
-  description = "ARN format could be aws or aws-us-gov. Defaults to non-gov."
-  default     = "aws"
-}
-
 variable "create_dynamodb_table" {
   type        = bool
   description = "Boolean for if a DynamoDB table is to be created for batch locking."
@@ -117,25 +111,18 @@ data "aws_region" "current" {}
 data "aws_partition" "current" {}
 
 locals {
-  account_id = data.aws_caller_identity.current.account_id
-  aws_region = data.aws_region.current.name
-}
+  account_id     = data.aws_caller_identity.current.account_id
+  aws_region     = data.aws_region.current.name
+  aws_partition  = data.aws_partition.current.partition
+  aws_dns_suffix = data.aws_partition.current.dns_suffix
 
-locals {
-  lambda_image_repo = "${local.account_id}.dkr.ecr.${local.aws_region}.amazonaws.com/geff"
-}
-
-locals {
+  lambda_image_repo         = "${local.account_id}.dkr.ecr.${local.aws_region}.${local.aws_dns_suffix}/geff"
   lambda_image_repo_version = "${local.lambda_image_repo}:${var.geff_image_version}"
-}
+  lambda_function_name      = "${local.geff_prefix}-lambda"
 
-locals {
-  inferred_api_gw_invoke_url = "https://${aws_api_gateway_rest_api.ef_to_lambda.id}.execute-api.${local.aws_region}.amazonaws.com/"
-  geff_prefix                = "${var.prefix}-geff"
-}
+  geff_prefix = "${var.prefix}-geff"
 
-locals {
-  lambda_function_name    = "${local.geff_prefix}-lambda"
-  api_gw_caller_role_name = "${local.geff_prefix}-api-gateway-caller"
-  api_gw_logger_role_name = "${local.geff_prefix}-api-gateway-logger"
+  inferred_api_gw_invoke_url = "https://${aws_api_gateway_rest_api.ef_to_lambda.id}.execute-api.${local.aws_region}.${local.aws_dns_suffix}/"
+  api_gw_caller_role_name    = "${local.geff_prefix}-api-gateway-caller"
+  api_gw_logger_role_name    = "${local.geff_prefix}-api-gateway-logger"
 }

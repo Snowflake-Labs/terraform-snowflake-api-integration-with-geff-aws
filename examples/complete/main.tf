@@ -6,7 +6,6 @@ module "geff" {
   env    = var.env
 
   # AWS
-  arn_format                      = var.arn_format
   aws_cloudwatch_metric_namespace = var.aws_cloudwatch_metric_namespace
   aws_region                      = var.aws_region
 
@@ -27,6 +26,7 @@ module "geff" {
   providers = {
     snowflake.api_integration_role     = snowflake.api_integration_role
     snowflake.storage_integration_role = snowflake.storage_integration_role
+    snowsql.storage_integration_role   = snowsql.storage_integration_role
     aws                                = aws
   }
 }
